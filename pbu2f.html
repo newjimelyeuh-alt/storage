@@ -1,0 +1,1757 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Chess Game</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@10/dist/framer-motion.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    html, body, #root {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    const { motion, AnimatePresence } = window.Motion;
+
+    // Chess Logic
+    const PIECES = {
+      PAWN: 'pawn',
+      ROOK: 'rook',
+      KNIGHT: 'knight',
+      BISHOP: 'bishop',
+      QUEEN: 'queen',
+      KING: 'king'
+    };
+
+    const COLORS = {
+      WHITE: 'white',
+      BLACK: 'black'
+    };
+
+    const initialBoard = () => {
+      const board = Array(8).fill(null).map(() => Array(8).fill(null));
+      
+      // Pawns
+      for (let i = 0; i < 8; i++) {
+        board[1][i] = { type: PIECES.PAWN, color: COLORS.BLACK };
+        board[6][i] = { type: PIECES.PAWN, color: COLORS.WHITE };
+      }
+      
+      // Rooks
+      board[0][0] = board[0][7] = { type: PIECES.ROOK, color: COLORS.BLACK };
+      board[7][0] = board[7][7] = { type: PIECES.ROOK, color: COLORS.WHITE };
+      
+      // Knights
+      board[0][1] = board[0][6] = { type: PIECES.KNIGHT, color: COLORS.BLACK };
+      board[7][1] = board[7][6] = { type: PIECES.KNIGHT, color: COLORS.WHITE };
+      
+      // Bishops
+      board[0][2] = board[0][5] = { type: PIECES.BISHOP, color: COLORS.BLACK };
+      board[7][2] = board[7][5] = { type: PIECES.BISHOP, color: COLORS.WHITE };
+      
+      // Queens
+      board[0][3] = { type: PIECES.QUEEN, color: COLORS.BLACK };
+      board[7][3] = { type: PIECES.QUEEN, color: COLORS.WHITE };
+      
+      // Kings
+      board[0][4] = { type: PIECES.KING, color: COLORS.BLACK };
+      board[7][4] = { type: PIECES.KING, color: COLORS.WHITE };
+      
+      return board;
+    };
+
+    const isValidMove = (board, from, to, currentPlayer) => {
+      const piece = board[from.row][from.col];
+      if (!piece || piece.color !== currentPlayer) return false;
+      
+      const targetPiece = board[to.row][to.col];
+      if (targetPiece && targetPiece.color === currentPlayer) return false;
+      
+      const rowDiff = to.row - from.row;
+      const colDiff = to.col - from.col;
+      
+      switch (piece.type) {
+        case PIECES.PAWN:
+          const direction = piece.color === COLORS.WHITE ? -1 : 1;
+          const startRow = piece.color === COLORS.WHITE ? 6 : 1;
+          
+          if (colDiff === 0 && !targetPiece) {
+            if (rowDiff === direction) return true;
+            if (from.row === startRow && rowDiff === 2 * direction && !board[from.row + direction][from.col]) return true;
+          }
+          if (Math.abs(colDiff) === 1 && rowDiff === direction && targetPiece) return true;
+          return false;
+          
+        case PIECES.ROOK:
+          if (rowDiff === 0 || colDiff === 0) {
+            return isPathClear(board, from, to);
+          }
+          return false;
+          
+        case PIECES.KNIGHT:
+          return (Math.abs(rowDiff) === 2 && Math.abs(colDiff) === 1) || 
+                 (Math.abs(rowDiff) === 1 && Math.abs(colDiff) === 2);
+          
+        case PIECES.BISHOP:
+          if (Math.abs(rowDiff) === Math.abs(colDiff)) {
+            return isPathClear(board, from, to);
+          }
+          return false;
+          
+        case PIECES.QUEEN:
+          if (rowDiff === 0 || colDiff === 0 || Math.abs(rowDiff) === Math.abs(colDiff)) {
+            return isPathClear(board, from, to);
+          }
+          return false;
+          
+        case PIECES.KING:
+          return Math.abs(rowDiff) <= 1 && Math.abs(colDiff) <= 1;
+          
+        default:
+          return false;
+      }
+    };
+
+    const isPathClear = (board, from, to) => {
+      const rowStep = to.row > from.row ? 1 : to.row < from.row ? -1 : 0;
+      const colStep = to.col > from.col ? 1 : to.col < from.col ? -1 : 0;
+      
+      let row = from.row + rowStep;
+      let col = from.col + colStep;
+      
+      while (row !== to.row || col !== to.col) {
+        if (board[row][col]) return false;
+        row += rowStep;
+        col += colStep;
+      }
+      
+      return true;
+    };
+
+    const findKing = (board, color) => {
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = board[row][col];
+          if (piece && piece.type === PIECES.KING && piece.color === color) {
+            return { row, col };
+          }
+        }
+      }
+      return null;
+    };
+
+    const isInCheck = (board, color) => {
+      const kingPos = findKing(board, color);
+      if (!kingPos) return false;
+      
+      const opponentColor = color === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE;
+      
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = board[row][col];
+          if (piece && piece.color === opponentColor) {
+            if (isValidMove(board, { row, col }, kingPos, opponentColor)) {
+              return true;
+            }
+          }
+        }
+      }
+      
+      return false;
+    };
+
+    // Professional SVG Chess Pieces
+    const PieceSVG = ({ type, color }) => {
+      const isWhite = color === COLORS.WHITE;
+      
+      const pieces = {
+        pawn: (
+          <svg viewBox="0 0 45 45" className="w-full h-full">
+            <g style={{ opacity: 1, fill: isWhite ? '#ffffff' : '#000000', fillOpacity: 1, fillRule: 'evenodd', stroke: isWhite ? '#000000' : '#ffffff', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'miter', strokeMiterlimit: 4, strokeDasharray: 'none', strokeOpacity: 1 }}>
+              <path d="M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.44,24.84 17.91,26.03 C 14.91,27.09 10.5,31.58 10.5,39.5 L 33.5,39.5 C 33.5,31.58 29.09,27.09 26.09,26.03 C 27.56,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 z"/>
+            </g>
+          </svg>
+        ),
+        rook: (
+          <svg viewBox="0 0 45 45" className="w-full h-full">
+            <g style={{ opacity: 1, fill: isWhite ? '#ffffff' : '#000000', fillOpacity: 1, fillRule: 'evenodd', stroke: isWhite ? '#000000' : '#ffffff', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round', strokeMiterlimit: 4, strokeDasharray: 'none', strokeOpacity: 1 }}>
+              <path d="M 9,39 L 36,39 L 36,36 L 9,36 L 9,39 z" style={{ strokeLinecap: 'butt' }}/>
+              <path d="M 12,36 L 12,32 L 33,32 L 33,36 L 12,36 z" style={{ strokeLinecap: 'butt' }}/>
+              <path d="M 11,14 L 11,9 L 15,9 L 15,11 L 20,11 L 20,9 L 25,9 L 25,11 L 30,11 L 30,9 L 34,9 L 34,14" style={{ strokeLinecap: 'butt' }}/>
+              <path d="M 34,14 L 31,17 L 14,17 L 11,14"/>
+              <path d="M 31,17 L 31,29.5 L 14,29.5 L 14,17" style={{ strokeLinecap: 'butt', strokeLinejoin: 'miter' }}/>
+              <path d="M 31,29.5 L 32.5,32 L 12.5,32 L 14,29.5"/>
+              <path d="M 11,14 L 34,14" style={{ fill: 'none', stroke: isWhite ? '#000000' : '#ffffff', strokeLinejoin: 'miter' }}/>
+            </g>
+          </svg>
+        ),
+        knight: (
+          <svg viewBox="0 0 45 45" className="w-full h-full">
+            <g style={{ opacity: 1, fill: 'none', fillOpacity: 1, fillRule: 'evenodd', stroke: isWhite ? '#000000' : '#ffffff', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round', strokeMiterlimit: 4, strokeDasharray: 'none', strokeOpacity: 1 }}>
+              <path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" style={{ fill: isWhite ? '#ffffff' : '#000000', stroke: isWhite ? '#000000' : '#ffffff' }}/>
+              <path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" style={{ fill: isWhite ? '#ffffff' : '#000000', stroke: isWhite ? '#000000' : '#ffffff' }}/>
+              <path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" style={{ fill: isWhite ? '#000000' : '#ffffff', stroke: isWhite ? '#000000' : '#ffffff' }}/>
+              <path d="M 15 15.5 A 0.5 1.5 0 1 1 14,15.5 A 0.5 1.5 0 1 1 15 15.5 z" transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)" style={{ fill: isWhite ? '#000000' : '#ffffff', stroke: isWhite ? '#000000' : '#ffffff' }}/>
+            </g>
+          </svg>
+        ),
+        bishop: (
+          <svg viewBox="0 0 45 45" className="w-full h-full">
+            <g style={{ opacity: 1, fill: 'none', fillRule: 'evenodd', fillOpacity: 1, stroke: isWhite ? '#000000' : '#ffffff', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round', strokeMiterlimit: 4, strokeDasharray: 'none', strokeOpacity: 1 }}>
+              <g style={{ fill: isWhite ? '#ffffff' : '#000000', stroke: isWhite ? '#000000' : '#ffffff', strokeLinecap: 'butt' }}>
+                <path d="M 9,36 C 12.39,35.03 19.11,36.43 22.5,34 C 25.89,36.43 32.61,35.03 36,36 C 36,36 37.65,36.54 39,38 C 38.32,38.97 37.35,38.99 36,38.5 C 32.61,37.53 25.89,38.96 22.5,37.5 C 19.11,38.96 12.39,37.53 9,38.5 C 7.65,38.99 6.68,38.97 6,38 C 7.35,36.54 9,36 9,36 z"/>
+                <path d="M 15,32 C 17.5,34.5 27.5,34.5 30,32 C 30.5,30.5 30,30 30,30 C 30,27.5 27.5,26 27.5,26 C 33,24.5 33.5,14.5 22.5,10.5 C 11.5,14.5 12,24.5 17.5,26 C 17.5,26 15,27.5 15,30 C 15,30 14.5,30.5 15,32 z"/>
+                <path d="M 25 8 A 2.5 2.5 0 1 1 20,8 A 2.5 2.5 0 1 1 25 8 z"/>
+              </g>
+              <path d="M 17.5,26 L 27.5,26 M 15,30 L 30,30 M 22.5,15.5 L 22.5,20.5 M 20,18 L 25,18" style={{ fill: 'none', stroke: isWhite ? '#000000' : '#ffffff', strokeLinejoin: 'miter' }}/>
+            </g>
+          </svg>
+        ),
+        queen: (
+          <svg viewBox="0 0 45 45" className="w-full h-full">
+            <g style={{ opacity: 1, fill: isWhite ? '#ffffff' : '#000000', fillOpacity: 1, fillRule: 'evenodd', stroke: isWhite ? '#000000' : '#ffffff', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round', strokeMiterlimit: 4, strokeDasharray: 'none', strokeOpacity: 1 }}>
+              <path d="M 9,26 C 17.5,24.5 30,24.5 36,26 L 38.5,13.5 L 31,25 L 30.7,10.9 L 25.5,24.5 L 22.5,10 L 19.5,24.5 L 14.3,10.9 L 14,25 L 6.5,13.5 L 9,26 z" style={{ strokeLinecap: 'butt', fill: isWhite ? '#ffffff' : '#000000' }}/>
+              <path d="M 9,26 C 9,28 10.5,28 11.5,30 C 12.5,31.5 12.5,31 12,33.5 C 10.5,34.5 11,36 11,36 C 9.5,37.5 11,38.5 11,38.5 C 17.5,39.5 27.5,39.5 34,38.5 C 34,38.5 35.5,37.5 34,36 C 34,36 34.5,34.5 33,33.5 C 32.5,31 32.5,31.5 33.5,30 C 34.5,28 36,28 36,26 C 27.5,24.5 17.5,24.5 9,26 z" style={{ strokeLinecap: 'butt' }}/>
+              <path d="M 11.5,30 C 15,29 30,29 33.5,30" style={{ fill: 'none' }}/>
+              <path d="M 12,33.5 C 18,32.5 27,32.5 33,33.5" style={{ fill: 'none' }}/>
+              <circle cx="6" cy="12" r="2"/>
+              <circle cx="14" cy="9" r="2"/>
+              <circle cx="22.5" cy="8" r="2"/>
+              <circle cx="31" cy="9" r="2"/>
+              <circle cx="39" cy="12" r="2"/>
+            </g>
+          </svg>
+        ),
+        king: (
+          <svg viewBox="0 0 45 45" className="w-full h-full">
+            <g style={{ fill: 'none', fillOpacity: 1, fillRule: 'evenodd', stroke: isWhite ? '#000000' : '#ffffff', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round', strokeMiterlimit: 4, strokeDasharray: 'none', strokeOpacity: 1 }}>
+              <path d="M 22.5,11.63 L 22.5,6" style={{ fill: 'none', stroke: isWhite ? '#000000' : '#ffffff', strokeLinejoin: 'miter' }}/>
+              <path d="M 20,8 L 25,8" style={{ fill: 'none', stroke: isWhite ? '#000000' : '#ffffff', strokeLinejoin: 'miter' }}/>
+              <path d="M 22.5,25 C 22.5,25 27,17.5 25.5,14.5 C 25.5,14.5 24.5,12 22.5,12 C 20.5,12 19.5,14.5 19.5,14.5 C 18,17.5 22.5,25 22.5,25" style={{ fill: isWhite ? '#ffffff' : '#000000', fillOpacity: 1, strokeLinecap: 'butt', strokeLinejoin: 'miter' }}/>
+              <path d="M 12.5,37 C 18,40.5 27,40.5 32.5,37 L 32.5,30 C 32.5,30 41.5,25.5 38.5,19.5 C 34.5,13 25,16 22.5,23.5 L 22.5,27 L 22.5,23.5 C 20,16 10.5,13 6.5,19.5 C 3.5,25.5 12.5,30 12.5,30 L 12.5,37" style={{ fill: isWhite ? '#ffffff' : '#000000', stroke: isWhite ? '#000000' : '#ffffff' }}/>
+              <path d="M 12.5,30 C 18,27 27,27 32.5,30" style={{ fill: 'none', stroke: isWhite ? '#000000' : '#ffffff' }}/>
+              <path d="M 12.5,33.5 C 18,30.5 27,30.5 32.5,33.5" style={{ fill: 'none', stroke: isWhite ? '#000000' : '#ffffff' }}/>
+              <path d="M 12.5,37 C 18,34 27,34 32.5,37" style={{ fill: 'none', stroke: isWhite ? '#000000' : '#ffffff' }}/>
+            </g>
+          </svg>
+        )
+      };
+      
+      return pieces[type] || null;
+    };
+
+    // Main App Component
+    const ChessGame = () => {
+      const [currentPage, setCurrentPage] = useState('menu');
+      const [board, setBoard] = useState(initialBoard());
+      const [selectedSquare, setSelectedSquare] = useState(null);
+      const [validMoves, setValidMoves] = useState([]);
+      const [currentPlayer, setCurrentPlayer] = useState(COLORS.WHITE);
+      const [whiteTime, setWhiteTime] = useState(300);
+      const [blackTime, setBlackTime] = useState(300);
+      const [isTimerActive, setIsTimerActive] = useState(false);
+      const [gameStarted, setGameStarted] = useState(false);
+      const [moveHistory, setMoveHistory] = useState([]);
+      const [canUndo, setCanUndo] = useState(false);
+      const [theme, setTheme] = useState('dark');
+      const [gameDuration, setGameDuration] = useState(5);
+      const [checkStatus, setCheckStatus] = useState(null);
+      const [gameOver, setGameOver] = useState(false);
+      const [winner, setWinner] = useState(null);
+
+      const defaultConfig = {
+        game_title: "Chess Master",
+        start_button_text: "Mulai Game",
+        settings_button_text: "Pengaturan",
+        how_to_play_text: "Cara Bermain",
+        player_one_label: "Pemain 1",
+        player_two_label: "Pemain 2",
+        primary_color: "#6366F1",
+        secondary_color: "#8B5CF6",
+        background_color: "#0F172A",
+        surface_color: "#1E293B",
+        text_color: "#F8FAFC"
+      };
+
+      const [config, setConfig] = useState(defaultConfig);
+
+      useEffect(() => {
+        const onConfigChange = async (newConfig) => {
+          setConfig(prevConfig => ({ ...prevConfig, ...newConfig }));
+          
+          document.documentElement.style.setProperty('--primary-color', newConfig.primary_color || defaultConfig.primary_color);
+          document.documentElement.style.setProperty('--secondary-color', newConfig.secondary_color || defaultConfig.secondary_color);
+          document.documentElement.style.setProperty('--background-color', newConfig.background_color || defaultConfig.background_color);
+          document.documentElement.style.setProperty('--surface-color', newConfig.surface_color || defaultConfig.surface_color);
+          document.documentElement.style.setProperty('--text-color', newConfig.text_color || defaultConfig.text_color);
+        };
+
+        if (window.elementSdk) {
+          window.elementSdk.init({
+            defaultConfig,
+            onConfigChange,
+            mapToCapabilities: (cfg) => ({
+              recolorables: [
+                {
+                  get: () => cfg.background_color || defaultConfig.background_color,
+                  set: (value) => {
+                    cfg.background_color = value;
+                    window.elementSdk.setConfig({ background_color: value });
+                  }
+                },
+                {
+                  get: () => cfg.surface_color || defaultConfig.surface_color,
+                  set: (value) => {
+                    cfg.surface_color = value;
+                    window.elementSdk.setConfig({ surface_color: value });
+                  }
+                },
+                {
+                  get: () => cfg.text_color || defaultConfig.text_color,
+                  set: (value) => {
+                    cfg.text_color = value;
+                    window.elementSdk.setConfig({ text_color: value });
+                  }
+                },
+                {
+                  get: () => cfg.primary_color || defaultConfig.primary_color,
+                  set: (value) => {
+                    cfg.primary_color = value;
+                    window.elementSdk.setConfig({ primary_color: value });
+                  }
+                },
+                {
+                  get: () => cfg.secondary_color || defaultConfig.secondary_color,
+                  set: (value) => {
+                    cfg.secondary_color = value;
+                    window.elementSdk.setConfig({ secondary_color: value });
+                  }
+                }
+              ],
+              borderables: [],
+              fontEditable: undefined,
+              fontSizeable: undefined
+            }),
+            mapToEditPanelValues: (cfg) => new Map([
+              ["game_title", cfg.game_title || defaultConfig.game_title],
+              ["start_button_text", cfg.start_button_text || defaultConfig.start_button_text],
+              ["settings_button_text", cfg.settings_button_text || defaultConfig.settings_button_text],
+              ["how_to_play_text", cfg.how_to_play_text || defaultConfig.how_to_play_text],
+              ["player_one_label", cfg.player_one_label || defaultConfig.player_one_label],
+              ["player_two_label", cfg.player_two_label || defaultConfig.player_two_label]
+            ])
+          });
+        }
+
+        onConfigChange(defaultConfig);
+      }, []);
+
+      useEffect(() => {
+        let interval;
+        if (isTimerActive && !gameOver) {
+          interval = setInterval(() => {
+            if (currentPlayer === COLORS.WHITE) {
+              setWhiteTime(prev => {
+                if (prev <= 1) {
+                  setGameOver(true);
+                  setWinner(COLORS.BLACK);
+                  setIsTimerActive(false);
+                  return 0;
+                }
+                return prev - 1;
+              });
+            } else {
+              setBlackTime(prev => {
+                if (prev <= 1) {
+                  setGameOver(true);
+                  setWinner(COLORS.WHITE);
+                  setIsTimerActive(false);
+                  return 0;
+                }
+                return prev - 1;
+              });
+            }
+          }, 1000);
+        }
+        return () => clearInterval(interval);
+      }, [isTimerActive, currentPlayer, gameOver]);
+
+      const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+      };
+
+      const playSound = (type) => {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        if (type === 'move') {
+          oscillator.frequency.value = 440;
+          gainNode.gain.value = 0.1;
+          oscillator.start();
+          oscillator.stop(audioContext.currentTime + 0.1);
+        } else if (type === 'check') {
+          oscillator.frequency.value = 880;
+          gainNode.gain.value = 0.15;
+          oscillator.start();
+          oscillator.stop(audioContext.currentTime + 0.2);
+        }
+      };
+
+      const handleSquareClick = (row, col) => {
+        if (gameOver) return;
+
+        if (!gameStarted) {
+          setGameStarted(true);
+          setIsTimerActive(true);
+        }
+
+        if (selectedSquare) {
+          const isValid = validMoves.some(move => move.row === row && move.col === col);
+          
+          if (isValid) {
+            const newBoard = board.map(r => [...r]);
+            const piece = newBoard[selectedSquare.row][selectedSquare.col];
+            newBoard[row][col] = piece;
+            newBoard[selectedSquare.row][selectedSquare.col] = null;
+            
+            const opponentColor = currentPlayer === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE;
+            const inCheck = isInCheck(newBoard, opponentColor);
+            
+            setMoveHistory([...moveHistory, { board: board.map(r => [...r]), player: currentPlayer }]);
+            setBoard(newBoard);
+            setSelectedSquare(null);
+            setValidMoves([]);
+            setCurrentPlayer(opponentColor);
+            setCanUndo(true);
+            
+            if (inCheck) {
+              setCheckStatus(opponentColor);
+              playSound('check');
+              
+              let hasValidMove = false;
+              for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                  const p = newBoard[r][c];
+                  if (p && p.color === opponentColor) {
+                    for (let tr = 0; tr < 8; tr++) {
+                      for (let tc = 0; tc < 8; tc++) {
+                        if (isValidMove(newBoard, { row: r, col: c }, { row: tr, col: tc }, opponentColor)) {
+                          const testBoard = newBoard.map(row => [...row]);
+                          testBoard[tr][tc] = testBoard[r][c];
+                          testBoard[r][c] = null;
+                          if (!isInCheck(testBoard, opponentColor)) {
+                            hasValidMove = true;
+                            break;
+                          }
+                        }
+                      }
+                      if (hasValidMove) break;
+                    }
+                  }
+                  if (hasValidMove) break;
+                }
+                if (hasValidMove) break;
+              }
+              
+              if (!hasValidMove) {
+                setGameOver(true);
+                setWinner(currentPlayer);
+                setIsTimerActive(false);
+              }
+            } else {
+              setCheckStatus(null);
+              playSound('move');
+            }
+          } else {
+            const piece = board[row][col];
+            if (piece && piece.color === currentPlayer) {
+              setSelectedSquare({ row, col });
+              const moves = [];
+              for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                  if (isValidMove(board, { row, col }, { row: r, col: c }, currentPlayer)) {
+                    const testBoard = board.map(row => [...row]);
+                    testBoard[r][c] = testBoard[row][col];
+                    testBoard[row][col] = null;
+                    if (!isInCheck(testBoard, currentPlayer)) {
+                      moves.push({ row: r, col: c });
+                    }
+                  }
+                }
+              }
+              setValidMoves(moves);
+            } else {
+              setSelectedSquare(null);
+              setValidMoves([]);
+            }
+          }
+        } else {
+          const piece = board[row][col];
+          if (piece && piece.color === currentPlayer) {
+            setSelectedSquare({ row, col });
+            const moves = [];
+            for (let r = 0; r < 8; r++) {
+              for (let c = 0; c < 8; c++) {
+                if (isValidMove(board, { row, col }, { row: r, col: c }, currentPlayer)) {
+                  const testBoard = board.map(row => [...row]);
+                  testBoard[r][c] = testBoard[row][col];
+                  testBoard[row][col] = null;
+                  if (!isInCheck(testBoard, currentPlayer)) {
+                    moves.push({ row: r, col: c });
+                  }
+                }
+              }
+            }
+            setValidMoves(moves);
+          }
+        }
+      };
+
+      const handleUndo = () => {
+        if (canUndo && moveHistory.length > 0) {
+          const lastMove = moveHistory[moveHistory.length - 1];
+          setBoard(lastMove.board);
+          setCurrentPlayer(lastMove.player);
+          setMoveHistory(moveHistory.slice(0, -1));
+          setCanUndo(false);
+          setSelectedSquare(null);
+          setValidMoves([]);
+          setCheckStatus(null);
+        }
+      };
+
+      const startNewGame = () => {
+        setBoard(initialBoard());
+        setCurrentPlayer(COLORS.WHITE);
+        setWhiteTime(gameDuration * 60);
+        setBlackTime(gameDuration * 60);
+        setIsTimerActive(false);
+        setGameStarted(false);
+        setMoveHistory([]);
+        setCanUndo(false);
+        setSelectedSquare(null);
+        setValidMoves([]);
+        setCheckStatus(null);
+        setGameOver(false);
+        setWinner(null);
+        setCurrentPage('game');
+      };
+
+      const toggleTheme = () => {
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        
+        const themeColors = newTheme === 'light' 
+          ? { background_color: '#F1F5F9', surface_color: '#FFFFFF', text_color: '#1E293B' }
+          : { background_color: '#0F172A', surface_color: '#1E293B', text_color: '#F8FAFC' };
+        
+        setConfig(prev => ({ ...prev, ...themeColors }));
+        
+        if (window.elementSdk) {
+          window.elementSdk.setConfig(themeColors);
+        }
+      };
+
+      const pageVariants = {
+        initial: { opacity: 0, y: 30 },
+        in: { opacity: 1, y: 0 },
+        out: { opacity: 0, y: -30 }
+      };
+
+      const bgColor = config.background_color || defaultConfig.background_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+
+      return (
+        <div style={{ backgroundColor: bgColor, color: textColor, minHeight: '100%', padding: '1.5rem' }}>
+          <AnimatePresence mode="wait">
+            {currentPage === 'menu' && (
+              <motion.div
+                key="menu"
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={{ duration: 0.4 }}
+                style={{ maxWidth: '28rem', margin: '0 auto', paddingTop: '3rem' }}
+              >
+                <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '2.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
+                  <h1 style={{ fontSize: '2.5rem', fontWeight: '700', textAlign: 'center', marginBottom: '2.5rem', background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                    {config.game_title || defaultConfig.game_title}
+                  </h1>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={startNewGame}
+                      style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`, color: 'white', padding: '1rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)' }}
+                    >
+                      ▶️ {config.start_button_text || defaultConfig.start_button_text}
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setCurrentPage('settings')}
+                      style={{ backgroundColor: 'rgba(100, 116, 139, 0.3)', color: textColor, padding: '1rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      ⚙️ {config.settings_button_text || defaultConfig.settings_button_text}
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setCurrentPage('howto')}
+                      style={{ backgroundColor: 'rgba(100, 116, 139, 0.3)', color: textColor, padding: '1rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      📜 {config.how_to_play_text || defaultConfig.how_to_play_text}
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={toggleTheme}
+                      style={{ backgroundColor: 'rgba(100, 116, 139, 0.3)', color: textColor, padding: '1rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      🎨 Tema: {theme === 'dark' ? 'Dark' : 'Light'}
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {currentPage === 'settings' && (
+              <motion.div
+                key="settings"
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={{ duration: 0.4 }}
+                style={{ maxWidth: '28rem', margin: '0 auto', paddingTop: '3rem' }}
+              >
+                <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '2.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
+                  <h2 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '2rem', textAlign: 'center' }}>⚙️ Pengaturan</h2>
+                  
+                  <div style={{ marginBottom: '2rem' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Durasi Waktu (menit)</label>
+                    <input
+                      type="number"
+                      value={gameDuration}
+                      onChange={(e) => setGameDuration(Math.max(1, parseInt(e.target.value) || 1))}
+                      min="1"
+                      max="60"
+                      style={{ width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '2px solid rgba(100, 116, 139, 0.3)', backgroundColor: bgColor, color: textColor, fontSize: '1rem' }}
+                    />
+                  </div>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setCurrentPage('menu')}
+                    style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`, color: 'white', padding: '1rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer', width: '100%' }}
+                  >
+                    🔙 Kembali ke Menu
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+
+            {currentPage === 'howto' && (
+              <motion.div
+                key="howto"
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={{ duration: 0.4 }}
+                style={{ maxWidth: '42rem', margin: '0 auto', paddingTop: '3rem' }}
+              >
+                <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '2.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
+                  <h2 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '2rem', textAlign: 'center' }}>📜 Cara Bermain</h2>
+                  
+                  <div style={{ marginBottom: '2rem', lineHeight: '1.8' }}>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>Aturan Dasar:</h3>
+                    <ul style={{ paddingLeft: '1.5rem', marginBottom: '1.5rem' }}>
+                      <li style={{ marginBottom: '0.5rem' }}>Catur dimainkan oleh 2 pemain dengan bidak putih dan hitam</li>
+                      <li style={{ marginBottom: '0.5rem' }}>Putih selalu bergerak terlebih dahulu</li>
+                      <li style={{ marginBottom: '0.5rem' }}>Tujuan: Skakmat raja lawan</li>
+                      <li style={{ marginBottom: '0.5rem' }}>Klik bidak untuk melihat gerakan yang valid</li>
+                      <li style={{ marginBottom: '0.5rem' }}>Klik kotak hijau untuk memindahkan bidak</li>
+                    </ul>
+                    
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>Gerakan Bidak:</h3>
+                    <ul style={{ paddingLeft: '1.5rem' }}>
+                      <li style={{ marginBottom: '0.5rem' }}><strong>Pawn (♟):</strong> Maju 1 kotak (2 kotak di langkah pertama), makan diagonal</li>
+                      <li style={{ marginBottom: '0.5rem' }}><strong>Rook (♜):</strong> Horizontal atau vertikal tanpa batas</li>
+                      <li style={{ marginBottom: '0.5rem' }}><strong>Knight (♞):</strong> Bentuk L (2+1 kotak)</li>
+                      <li style={{ marginBottom: '0.5rem' }}><strong>Bishop (♝):</strong> Diagonal tanpa batas</li>
+                      <li style={{ marginBottom: '0.5rem' }}><strong>Queen (♛):</strong> Semua arah tanpa batas</li>
+                      <li style={{ marginBottom: '0.5rem' }}><strong>King (♚):</strong> 1 kotak ke semua arah</li>
+                    </ul>
+                  </div>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setCurrentPage('menu')}
+                    style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`, color: 'white', padding: '1rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer', width: '100%' }}
+                  >
+                    🔙 Kembali ke Menu
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+
+            {currentPage === 'game' && (
+              <motion.div
+                key="game"
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={{ duration: 0.4 }}
+                style={{ maxWidth: '64rem', margin: '0 auto' }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setCurrentPage('menu')}
+                    style={{ backgroundColor: 'rgba(100, 116, 139, 0.3)', color: textColor, padding: '0.75rem 1.5rem', borderRadius: '0.75rem', border: 'none', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}
+                  >
+                    🔙 Menu
+                  </motion.button>
+                  
+                  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleUndo}
+                      disabled={!canUndo}
+                      style={{ backgroundColor: canUndo ? 'rgba(100, 116, 139, 0.5)' : 'rgba(100, 116, 139, 0.2)', color: textColor, padding: '0.75rem 1.5rem', borderRadius: '0.75rem', border: 'none', fontSize: '1rem', fontWeight: '600', cursor: canUndo ? 'pointer' : 'not-allowed', opacity: canUndo ? 1 : 0.5 }}
+                    >
+                      🔁 Undo
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={startNewGame}
+                      style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`, color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.75rem', border: 'none', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      🔄 Game Baru
+                    </motion.button>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
+                  <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '1.5rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                      <div>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '600' }}>{config.player_two_label || defaultConfig.player_two_label}</div>
+                        <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>⚫ Hitam</div>
+                      </div>
+                      <div style={{ fontSize: '2rem', fontWeight: '700', fontFamily: 'monospace', color: currentPlayer === COLORS.BLACK ? primaryColor : textColor }}>
+                        {formatTime(blackTime)}
+                      </div>
+                    </div>
+                    {checkStatus === COLORS.BLACK && (
+                      <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', color: '#EF4444', padding: '0.75rem', borderRadius: '0.5rem', textAlign: 'center', fontWeight: '600' }}>
+                        ⚠️ SKAK!
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '1rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: '0', aspectRatio: '1', maxWidth: '100%' }}>
+                      {board.map((row, rowIndex) => (
+                        row.map((piece, colIndex) => {
+                          const isLight = (rowIndex + colIndex) % 2 === 0;
+                          const isSelected = selectedSquare && selectedSquare.row === rowIndex && selectedSquare.col === colIndex;
+                          const isValidMove = validMoves.some(move => move.row === rowIndex && move.col === colIndex);
+                          
+                          return (
+                            <motion.div
+                              key={`${rowIndex}-${colIndex}`}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => handleSquareClick(rowIndex, colIndex)}
+                              style={{
+                                backgroundColor: isSelected ? '#FBBF24' : isValidMove ? '#10B981' : isLight ? '#F0D9B5' : '#B58863',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                position: 'relative',
+                                aspectRatio: '1'
+                              }}
+                            >
+                              {piece && (
+                                <motion.div
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  style={{ width: '80%', height: '80%', padding: '5%' }}
+                                >
+                                  <PieceSVG type={piece.type} color={piece.color} />
+                                </motion.div>
+                              )}
+                              {isValidMove && !piece && (
+                                <div style={{ width: '30%', height: '30%', backgroundColor: 'rgba(16, 185, 129, 0.5)', borderRadius: '50%' }} />
+                              )}
+                            </motion.div>
+                          );
+                        })
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '1.5rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                      <div>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '600' }}>{config.player_one_label || defaultConfig.player_one_label}</div>
+                        <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>⚪ Putih</div>
+                      </div>
+                      <div style={{ fontSize: '2rem', fontWeight: '700', fontFamily: 'monospace', color: currentPlayer === COLORS.WHITE ? primaryColor : textColor }}>
+                        {formatTime(whiteTime)}
+                      </div>
+                    </div>
+                    {checkStatus === COLORS.WHITE && (
+                      <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', color: '#EF4444', padding: '0.75rem', borderRadius: '0.5rem', textAlign: 'center', fontWeight: '600' }}>
+                        ⚠️ SKAK!
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {gameOver && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+                  >
+                    <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '3rem', textAlign: 'center', maxWidth: '28rem' }}>
+                      <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🏆</div>
+                      <h2 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '1rem' }}>
+                        {winner === COLORS.WHITE ? 'Putih Menang!' : 'Hitam Menang!'}
+                      </h2>
+                      <p style={{ fontSize: '1.125rem', opacity: 0.8, marginBottom: '2rem' }}>
+                        {whiteTime === 0 || blackTime === 0 ? 'Waktu Habis!' : 'Skakmat!'}
+                      </p>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={startNewGame}
+                        style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`, color: 'white', padding: '1rem 2rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer', marginRight: '1rem' }}
+                      >
+                        Main Lagi
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setCurrentPage('menu')}
+                        style={{ backgroundColor: 'rgba(100, 116, 139, 0.3)', color: textColor, padding: '1rem 2rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer' }}
+                      >
+                        Menu
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<ChessGame />, document.getElementById('root'));
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Chess Game</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@10/dist/framer-motion.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    html, body, #root {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    const { motion, AnimatePresence } = window.Motion;
+
+    // Chess Logic
+    const PIECES = {
+      PAWN: 'pawn',
+      ROOK: 'rook',
+      KNIGHT: 'knight',
+      BISHOP: 'bishop',
+      QUEEN: 'queen',
+      KING: 'king'
+    };
+
+    const COLORS = {
+      WHITE: 'white',
+      BLACK: 'black'
+    };
+
+    const initialBoard = () => {
+      const board = Array(8).fill(null).map(() => Array(8).fill(null));
+      
+      // Pawns
+      for (let i = 0; i < 8; i++) {
+        board[1][i] = { type: PIECES.PAWN, color: COLORS.BLACK };
+        board[6][i] = { type: PIECES.PAWN, color: COLORS.WHITE };
+      }
+      
+      // Rooks
+      board[0][0] = board[0][7] = { type: PIECES.ROOK, color: COLORS.BLACK };
+      board[7][0] = board[7][7] = { type: PIECES.ROOK, color: COLORS.WHITE };
+      
+      // Knights
+      board[0][1] = board[0][6] = { type: PIECES.KNIGHT, color: COLORS.BLACK };
+      board[7][1] = board[7][6] = { type: PIECES.KNIGHT, color: COLORS.WHITE };
+      
+      // Bishops
+      board[0][2] = board[0][5] = { type: PIECES.BISHOP, color: COLORS.BLACK };
+      board[7][2] = board[7][5] = { type: PIECES.BISHOP, color: COLORS.WHITE };
+      
+      // Queens
+      board[0][3] = { type: PIECES.QUEEN, color: COLORS.BLACK };
+      board[7][3] = { type: PIECES.QUEEN, color: COLORS.WHITE };
+      
+      // Kings
+      board[0][4] = { type: PIECES.KING, color: COLORS.BLACK };
+      board[7][4] = { type: PIECES.KING, color: COLORS.WHITE };
+      
+      return board;
+    };
+
+    const isValidMove = (board, from, to, currentPlayer) => {
+      const piece = board[from.row][from.col];
+      if (!piece || piece.color !== currentPlayer) return false;
+      
+      const targetPiece = board[to.row][to.col];
+      if (targetPiece && targetPiece.color === currentPlayer) return false;
+      
+      const rowDiff = to.row - from.row;
+      const colDiff = to.col - from.col;
+      
+      switch (piece.type) {
+        case PIECES.PAWN:
+          const direction = piece.color === COLORS.WHITE ? -1 : 1;
+          const startRow = piece.color === COLORS.WHITE ? 6 : 1;
+          
+          if (colDiff === 0 && !targetPiece) {
+            if (rowDiff === direction) return true;
+            if (from.row === startRow && rowDiff === 2 * direction && !board[from.row + direction][from.col]) return true;
+          }
+          if (Math.abs(colDiff) === 1 && rowDiff === direction && targetPiece) return true;
+          return false;
+          
+        case PIECES.ROOK:
+          if (rowDiff === 0 || colDiff === 0) {
+            return isPathClear(board, from, to);
+          }
+          return false;
+          
+        case PIECES.KNIGHT:
+          return (Math.abs(rowDiff) === 2 && Math.abs(colDiff) === 1) || 
+                 (Math.abs(rowDiff) === 1 && Math.abs(colDiff) === 2);
+          
+        case PIECES.BISHOP:
+          if (Math.abs(rowDiff) === Math.abs(colDiff)) {
+            return isPathClear(board, from, to);
+          }
+          return false;
+          
+        case PIECES.QUEEN:
+          if (rowDiff === 0 || colDiff === 0 || Math.abs(rowDiff) === Math.abs(colDiff)) {
+            return isPathClear(board, from, to);
+          }
+          return false;
+          
+        case PIECES.KING:
+          return Math.abs(rowDiff) <= 1 && Math.abs(colDiff) <= 1;
+          
+        default:
+          return false;
+      }
+    };
+
+    const isPathClear = (board, from, to) => {
+      const rowStep = to.row > from.row ? 1 : to.row < from.row ? -1 : 0;
+      const colStep = to.col > from.col ? 1 : to.col < from.col ? -1 : 0;
+      
+      let row = from.row + rowStep;
+      let col = from.col + colStep;
+      
+      while (row !== to.row || col !== to.col) {
+        if (board[row][col]) return false;
+        row += rowStep;
+        col += colStep;
+      }
+      
+      return true;
+    };
+
+    const findKing = (board, color) => {
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = board[row][col];
+          if (piece && piece.type === PIECES.KING && piece.color === color) {
+            return { row, col };
+          }
+        }
+      }
+      return null;
+    };
+
+    const isInCheck = (board, color) => {
+      const kingPos = findKing(board, color);
+      if (!kingPos) return false;
+      
+      const opponentColor = color === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE;
+      
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = board[row][col];
+          if (piece && piece.color === opponentColor) {
+            if (isValidMove(board, { row, col }, kingPos, opponentColor)) {
+              return true;
+            }
+          }
+        }
+      }
+      
+      return false;
+    };
+
+    // SVG Pieces
+    const PieceSVG = ({ type, color }) => {
+      const fillColor = color === COLORS.WHITE ? '#F8FAFC' : '#1E293B';
+      const strokeColor = color === COLORS.WHITE ? '#64748B' : '#94A3B8';
+      
+      const pieces = {
+        pawn: (
+          <svg viewBox="0 0 45 45" className="w-full h-full">
+            <path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill={fillColor} stroke={strokeColor} strokeWidth="1.5"/>
+          </svg>
+        ),
+        rook: (
+          <svg viewBox="0 0 45 45" className="w-full h-full">
+            <path d="M9 39h27v-3H9v3zm3-3v-4h21v4H12zm0-7v-7h21v7H12zm21-11H12c0-2 1-3 3-3h12c2 0 3 1 3 3zm-18 0V9h3v5h3V9h3v5h3V9h3v9H15z" fill={fillColor} stroke={strokeColor} strokeWidth="1.5"/>
+          </svg>
+        ),
+        knight: (
+          <svg viewBox="0 0 45 45" className="w-full h-full">
+            <path d="M22 10c-1.66 0-3 1.34-3 3 0 .89.41 1.67 1.03 2.22C17.4 16.46 15 19.5 15 23c0 1.66.67 3.16 1.76 4.24L11 38h22l-5.76-10.76C28.33 26.16 29 24.66 29 23c0-3.5-2.4-6.54-5.97-7.78.62-.55 1.03-1.33 1.03-2.22 0-1.66-1.34-3-3-3z" fill={fillColor} stroke={strokeColor} strokeWidth="1.5"/>
+          </svg>
+        ),
+        bishop: (
+          <svg viewBox="0 0 45 45" className="w-full h-full">
+            <path d="M9 36c0 .83.67 1.5 1.5 1.5h24c.83 0 1.5-.67 1.5-1.5 0-.83-.67-1.5-1.5-1.5h-24c-.83 0-1.5.67-1.5 1.5zm13.5-27c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38-1.95 1.12-3.28 3.21-3.28 5.62 0 2.03.94 3.84 2.41 5.03-1.73.61-3.41 1.79-4.41 3.47h18c-1-1.68-2.68-2.86-4.41-3.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill={fillColor} stroke={strokeColor} strokeWidth="1.5"/>
+          </svg>
+        ),
+        queen: (
+          <svg viewBox="0 0 45 45" className="w-full h-full">
+            <path d="M8 12c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2-2 .9-2 2zm14 0c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2-2 .9-2 2zm-7 0c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2-2 .9-2 2zm14 0c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2-2 .9-2 2zm7 0c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2-2 .9-2 2zM10 16l3 13h19l3-13-5 4-3-6-3 6-3-6-3 6-5-4zm-1 20h27v3H9v-3z" fill={fillColor} stroke={strokeColor} strokeWidth="1.5"/>
+          </svg>
+        ),
+        king: (
+          <svg viewBox="0 0 45 45" className="w-full h-full">
+            <path d="M22.5 6v5h-5v3h5v5h3v-5h5v-3h-5V6h-3zm-9 27c0 1.66 1.34 3 3 3h12c1.66 0 3-1.34 3-3v-9H13.5v9zm15-12v-6c0-2.21-1.79-4-4-4h-6c-2.21 0-4 1.79-4 4v6h14zm-14 15h18v3h-18v-3z" fill={fillColor} stroke={strokeColor} strokeWidth="1.5"/>
+          </svg>
+        )
+      };
+      
+      return pieces[type] || null;
+    };
+
+    // Main App Component
+    const ChessGame = () => {
+      const [currentPage, setCurrentPage] = useState('menu');
+      const [board, setBoard] = useState(initialBoard());
+      const [selectedSquare, setSelectedSquare] = useState(null);
+      const [validMoves, setValidMoves] = useState([]);
+      const [currentPlayer, setCurrentPlayer] = useState(COLORS.WHITE);
+      const [whiteTime, setWhiteTime] = useState(300);
+      const [blackTime, setBlackTime] = useState(300);
+      const [isTimerActive, setIsTimerActive] = useState(false);
+      const [gameStarted, setGameStarted] = useState(false);
+      const [moveHistory, setMoveHistory] = useState([]);
+      const [canUndo, setCanUndo] = useState(false);
+      const [theme, setTheme] = useState('dark');
+      const [gameDuration, setGameDuration] = useState(5);
+      const [checkStatus, setCheckStatus] = useState(null);
+      const [gameOver, setGameOver] = useState(false);
+      const [winner, setWinner] = useState(null);
+
+      const defaultConfig = {
+        game_title: "Chess Master",
+        start_button_text: "Mulai Game",
+        settings_button_text: "Pengaturan",
+        how_to_play_text: "Cara Bermain",
+        player_one_label: "Pemain 1",
+        player_two_label: "Pemain 2",
+        primary_color: "#6366F1",
+        secondary_color: "#8B5CF6",
+        background_color: "#0F172A",
+        surface_color: "#1E293B",
+        text_color: "#F8FAFC"
+      };
+
+      const [config, setConfig] = useState(defaultConfig);
+      
+      const getThemeColors = (themeName) => {
+        if (themeName === 'light') {
+          return {
+            background_color: "#F1F5F9",
+            surface_color: "#FFFFFF",
+            text_color: "#1E293B"
+          };
+        } else {
+          return {
+            background_color: "#0F172A",
+            surface_color: "#1E293B",
+            text_color: "#F8FAFC"
+          };
+        }
+      };
+
+      useEffect(() => {
+        const onConfigChange = async (newConfig) => {
+          setConfig(prevConfig => ({ ...prevConfig, ...newConfig }));
+          
+          document.documentElement.style.setProperty('--primary-color', newConfig.primary_color || defaultConfig.primary_color);
+          document.documentElement.style.setProperty('--secondary-color', newConfig.secondary_color || defaultConfig.secondary_color);
+          document.documentElement.style.setProperty('--background-color', newConfig.background_color || defaultConfig.background_color);
+          document.documentElement.style.setProperty('--surface-color', newConfig.surface_color || defaultConfig.surface_color);
+          document.documentElement.style.setProperty('--text-color', newConfig.text_color || defaultConfig.text_color);
+        };
+
+        if (window.elementSdk) {
+          window.elementSdk.init({
+            defaultConfig,
+            onConfigChange,
+            mapToCapabilities: (cfg) => ({
+              recolorables: [
+                {
+                  get: () => cfg.background_color || defaultConfig.background_color,
+                  set: (value) => {
+                    cfg.background_color = value;
+                    window.elementSdk.setConfig({ background_color: value });
+                  }
+                },
+                {
+                  get: () => cfg.surface_color || defaultConfig.surface_color,
+                  set: (value) => {
+                    cfg.surface_color = value;
+                    window.elementSdk.setConfig({ surface_color: value });
+                  }
+                },
+                {
+                  get: () => cfg.text_color || defaultConfig.text_color,
+                  set: (value) => {
+                    cfg.text_color = value;
+                    window.elementSdk.setConfig({ text_color: value });
+                  }
+                },
+                {
+                  get: () => cfg.primary_color || defaultConfig.primary_color,
+                  set: (value) => {
+                    cfg.primary_color = value;
+                    window.elementSdk.setConfig({ primary_color: value });
+                  }
+                },
+                {
+                  get: () => cfg.secondary_color || defaultConfig.secondary_color,
+                  set: (value) => {
+                    cfg.secondary_color = value;
+                    window.elementSdk.setConfig({ secondary_color: value });
+                  }
+                }
+              ],
+              borderables: [],
+              fontEditable: undefined,
+              fontSizeable: undefined
+            }),
+            mapToEditPanelValues: (cfg) => new Map([
+              ["game_title", cfg.game_title || defaultConfig.game_title],
+              ["start_button_text", cfg.start_button_text || defaultConfig.start_button_text],
+              ["settings_button_text", cfg.settings_button_text || defaultConfig.settings_button_text],
+              ["how_to_play_text", cfg.how_to_play_text || defaultConfig.how_to_play_text],
+              ["player_one_label", cfg.player_one_label || defaultConfig.player_one_label],
+              ["player_two_label", cfg.player_two_label || defaultConfig.player_two_label]
+            ])
+          });
+        }
+
+        onConfigChange(defaultConfig);
+      }, []);
+
+      useEffect(() => {
+        let interval;
+        if (isTimerActive && !gameOver) {
+          interval = setInterval(() => {
+            if (currentPlayer === COLORS.WHITE) {
+              setWhiteTime(prev => {
+                if (prev <= 1) {
+                  setGameOver(true);
+                  setWinner(COLORS.BLACK);
+                  setIsTimerActive(false);
+                  return 0;
+                }
+                return prev - 1;
+              });
+            } else {
+              setBlackTime(prev => {
+                if (prev <= 1) {
+                  setGameOver(true);
+                  setWinner(COLORS.WHITE);
+                  setIsTimerActive(false);
+                  return 0;
+                }
+                return prev - 1;
+              });
+            }
+          }, 1000);
+        }
+        return () => clearInterval(interval);
+      }, [isTimerActive, currentPlayer, gameOver]);
+
+      const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+      };
+
+      const playSound = (type) => {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        if (type === 'move') {
+          oscillator.frequency.value = 440;
+          gainNode.gain.value = 0.1;
+          oscillator.start();
+          oscillator.stop(audioContext.currentTime + 0.1);
+        } else if (type === 'check') {
+          oscillator.frequency.value = 880;
+          gainNode.gain.value = 0.15;
+          oscillator.start();
+          oscillator.stop(audioContext.currentTime + 0.2);
+        }
+      };
+
+      const handleSquareClick = (row, col) => {
+        if (gameOver) return;
+
+        if (!gameStarted) {
+          setGameStarted(true);
+          setIsTimerActive(true);
+        }
+
+        if (selectedSquare) {
+          const isValid = validMoves.some(move => move.row === row && move.col === col);
+          
+          if (isValid) {
+            const newBoard = board.map(r => [...r]);
+            const piece = newBoard[selectedSquare.row][selectedSquare.col];
+            newBoard[row][col] = piece;
+            newBoard[selectedSquare.row][selectedSquare.col] = null;
+            
+            const opponentColor = currentPlayer === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE;
+            const inCheck = isInCheck(newBoard, opponentColor);
+            
+            setMoveHistory([...moveHistory, { board: board.map(r => [...r]), player: currentPlayer }]);
+            setBoard(newBoard);
+            setSelectedSquare(null);
+            setValidMoves([]);
+            setCurrentPlayer(opponentColor);
+            setCanUndo(true);
+            
+            if (inCheck) {
+              setCheckStatus(opponentColor);
+              playSound('check');
+              
+              let hasValidMove = false;
+              for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                  const p = newBoard[r][c];
+                  if (p && p.color === opponentColor) {
+                    for (let tr = 0; tr < 8; tr++) {
+                      for (let tc = 0; tc < 8; tc++) {
+                        if (isValidMove(newBoard, { row: r, col: c }, { row: tr, col: tc }, opponentColor)) {
+                          const testBoard = newBoard.map(row => [...row]);
+                          testBoard[tr][tc] = testBoard[r][c];
+                          testBoard[r][c] = null;
+                          if (!isInCheck(testBoard, opponentColor)) {
+                            hasValidMove = true;
+                            break;
+                          }
+                        }
+                      }
+                      if (hasValidMove) break;
+                    }
+                  }
+                  if (hasValidMove) break;
+                }
+                if (hasValidMove) break;
+              }
+              
+              if (!hasValidMove) {
+                setGameOver(true);
+                setWinner(currentPlayer);
+                setIsTimerActive(false);
+              }
+            } else {
+              setCheckStatus(null);
+              playSound('move');
+            }
+          } else {
+            const piece = board[row][col];
+            if (piece && piece.color === currentPlayer) {
+              setSelectedSquare({ row, col });
+              const moves = [];
+              for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                  if (isValidMove(board, { row, col }, { row: r, col: c }, currentPlayer)) {
+                    const testBoard = board.map(row => [...row]);
+                    testBoard[r][c] = testBoard[row][col];
+                    testBoard[row][col] = null;
+                    if (!isInCheck(testBoard, currentPlayer)) {
+                      moves.push({ row: r, col: c });
+                    }
+                  }
+                }
+              }
+              setValidMoves(moves);
+            } else {
+              setSelectedSquare(null);
+              setValidMoves([]);
+            }
+          }
+        } else {
+          const piece = board[row][col];
+          if (piece && piece.color === currentPlayer) {
+            setSelectedSquare({ row, col });
+            const moves = [];
+            for (let r = 0; r < 8; r++) {
+              for (let c = 0; c < 8; c++) {
+                if (isValidMove(board, { row, col }, { row: r, col: c }, currentPlayer)) {
+                  const testBoard = board.map(row => [...row]);
+                  testBoard[r][c] = testBoard[row][col];
+                  testBoard[row][col] = null;
+                  if (!isInCheck(testBoard, currentPlayer)) {
+                    moves.push({ row: r, col: c });
+                  }
+                }
+              }
+            }
+            setValidMoves(moves);
+          }
+        }
+      };
+
+      const handleUndo = () => {
+        if (canUndo && moveHistory.length > 0) {
+          const lastMove = moveHistory[moveHistory.length - 1];
+          setBoard(lastMove.board);
+          setCurrentPlayer(lastMove.player);
+          setMoveHistory(moveHistory.slice(0, -1));
+          setCanUndo(false);
+          setSelectedSquare(null);
+          setValidMoves([]);
+          setCheckStatus(null);
+        }
+      };
+
+      const startNewGame = () => {
+        setBoard(initialBoard());
+        setCurrentPlayer(COLORS.WHITE);
+        setWhiteTime(gameDuration * 60);
+        setBlackTime(gameDuration * 60);
+        setIsTimerActive(false);
+        setGameStarted(false);
+        setMoveHistory([]);
+        setCanUndo(false);
+        setSelectedSquare(null);
+        setValidMoves([]);
+        setCheckStatus(null);
+        setGameOver(false);
+        setWinner(null);
+        setCurrentPage('game');
+      };
+
+      const pageVariants = {
+        initial: { opacity: 0, y: 30 },
+        in: { opacity: 1, y: 0 },
+        out: { opacity: 0, y: -30 }
+      };
+
+      const bgColor = config.background_color || defaultConfig.background_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+
+      return (
+        <div style={{ backgroundColor: bgColor, color: textColor, minHeight: '100%', padding: '1.5rem' }}>
+          <AnimatePresence mode="wait">
+            {currentPage === 'menu' && (
+              <motion.div
+                key="menu"
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={{ duration: 0.4 }}
+                style={{ maxWidth: '28rem', margin: '0 auto', paddingTop: '3rem' }}
+              >
+                <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '2.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
+                  <h1 style={{ fontSize: '2.5rem', fontWeight: '700', textAlign: 'center', marginBottom: '2.5rem', background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                    {config.game_title || defaultConfig.game_title}
+                  </h1>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={startNewGame}
+                      style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`, color: 'white', padding: '1rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)' }}
+                    >
+                      ▶️ {config.start_button_text || defaultConfig.start_button_text}
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setCurrentPage('settings')}
+                      style={{ backgroundColor: 'rgba(100, 116, 139, 0.3)', color: textColor, padding: '1rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      ⚙️ {config.settings_button_text || defaultConfig.settings_button_text}
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setCurrentPage('howto')}
+                      style={{ backgroundColor: 'rgba(100, 116, 139, 0.3)', color: textColor, padding: '1rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      📜 {config.how_to_play_text || defaultConfig.how_to_play_text}
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                      style={{ backgroundColor: 'rgba(100, 116, 139, 0.3)', color: textColor, padding: '1rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      🎨 Tema: {theme === 'dark' ? 'Dark' : 'Light'}
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {currentPage === 'settings' && (
+              <motion.div
+                key="settings"
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={{ duration: 0.4 }}
+                style={{ maxWidth: '28rem', margin: '0 auto', paddingTop: '3rem' }}
+              >
+                <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '2.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
+                  <h2 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '2rem', textAlign: 'center' }}>⚙️ Pengaturan</h2>
+                  
+                  <div style={{ marginBottom: '2rem' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Durasi Waktu (menit)</label>
+                    <input
+                      type="number"
+                      value={gameDuration}
+                      onChange={(e) => setGameDuration(Math.max(1, parseInt(e.target.value) || 1))}
+                      min="1"
+                      max="60"
+                      style={{ width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '2px solid rgba(100, 116, 139, 0.3)', backgroundColor: bgColor, color: textColor, fontSize: '1rem' }}
+                    />
+                  </div>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setCurrentPage('menu')}
+                    style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`, color: 'white', padding: '1rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer', width: '100%' }}
+                  >
+                    🔙 Kembali ke Menu
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+
+            {currentPage === 'howto' && (
+              <motion.div
+                key="howto"
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={{ duration: 0.4 }}
+                style={{ maxWidth: '42rem', margin: '0 auto', paddingTop: '3rem' }}
+              >
+                <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '2.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
+                  <h2 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '2rem', textAlign: 'center' }}>📜 Cara Bermain</h2>
+                  
+                  <div style={{ marginBottom: '2rem', lineHeight: '1.8' }}>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>Aturan Dasar:</h3>
+                    <ul style={{ paddingLeft: '1.5rem', marginBottom: '1.5rem' }}>
+                      <li style={{ marginBottom: '0.5rem' }}>Catur dimainkan oleh 2 pemain dengan bidak putih dan hitam</li>
+                      <li style={{ marginBottom: '0.5rem' }}>Putih selalu bergerak terlebih dahulu</li>
+                      <li style={{ marginBottom: '0.5rem' }}>Tujuan: Skakmat raja lawan</li>
+                      <li style={{ marginBottom: '0.5rem' }}>Klik bidak untuk melihat gerakan yang valid</li>
+                      <li style={{ marginBottom: '0.5rem' }}>Klik kotak hijau untuk memindahkan bidak</li>
+                    </ul>
+                    
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>Gerakan Bidak:</h3>
+                    <ul style={{ paddingLeft: '1.5rem' }}>
+                      <li style={{ marginBottom: '0.5rem' }}><strong>Pawn (♟):</strong> Maju 1 kotak (2 kotak di langkah pertama), makan diagonal</li>
+                      <li style={{ marginBottom: '0.5rem' }}><strong>Rook (♜):</strong> Horizontal atau vertikal tanpa batas</li>
+                      <li style={{ marginBottom: '0.5rem' }}><strong>Knight (♞):</strong> Bentuk L (2+1 kotak)</li>
+                      <li style={{ marginBottom: '0.5rem' }}><strong>Bishop (♝):</strong> Diagonal tanpa batas</li>
+                      <li style={{ marginBottom: '0.5rem' }}><strong>Queen (♛):</strong> Semua arah tanpa batas</li>
+                      <li style={{ marginBottom: '0.5rem' }}><strong>King (♚):</strong> 1 kotak ke semua arah</li>
+                    </ul>
+                  </div>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setCurrentPage('menu')}
+                    style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`, color: 'white', padding: '1rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer', width: '100%' }}
+                  >
+                    🔙 Kembali ke Menu
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+
+            {currentPage === 'game' && (
+              <motion.div
+                key="game"
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={{ duration: 0.4 }}
+                style={{ maxWidth: '64rem', margin: '0 auto' }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setCurrentPage('menu')}
+                    style={{ backgroundColor: 'rgba(100, 116, 139, 0.3)', color: textColor, padding: '0.75rem 1.5rem', borderRadius: '0.75rem', border: 'none', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}
+                  >
+                    🔙 Menu
+                  </motion.button>
+                  
+                  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleUndo}
+                      disabled={!canUndo}
+                      style={{ backgroundColor: canUndo ? 'rgba(100, 116, 139, 0.5)' : 'rgba(100, 116, 139, 0.2)', color: textColor, padding: '0.75rem 1.5rem', borderRadius: '0.75rem', border: 'none', fontSize: '1rem', fontWeight: '600', cursor: canUndo ? 'pointer' : 'not-allowed', opacity: canUndo ? 1 : 0.5 }}
+                    >
+                      🔁 Undo
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={startNewGame}
+                      style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`, color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.75rem', border: 'none', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      🔄 Game Baru
+                    </motion.button>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
+                  <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '1.5rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                      <div>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '600' }}>{config.player_two_label || defaultConfig.player_two_label}</div>
+                        <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>⚫ Hitam</div>
+                      </div>
+                      <div style={{ fontSize: '2rem', fontWeight: '700', fontFamily: 'monospace', color: currentPlayer === COLORS.BLACK ? primaryColor : textColor }}>
+                        {formatTime(blackTime)}
+                      </div>
+                    </div>
+                    {checkStatus === COLORS.BLACK && (
+                      <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', color: '#EF4444', padding: '0.75rem', borderRadius: '0.5rem', textAlign: 'center', fontWeight: '600' }}>
+                        ⚠️ SKAK!
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '1rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: '0', aspectRatio: '1', maxWidth: '100%' }}>
+                      {board.map((row, rowIndex) => (
+                        row.map((piece, colIndex) => {
+                          const isLight = (rowIndex + colIndex) % 2 === 0;
+                          const isSelected = selectedSquare && selectedSquare.row === rowIndex && selectedSquare.col === colIndex;
+                          const isValidMove = validMoves.some(move => move.row === rowIndex && move.col === colIndex);
+                          
+                          return (
+                            <motion.div
+                              key={`${rowIndex}-${colIndex}`}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => handleSquareClick(rowIndex, colIndex)}
+                              style={{
+                                backgroundColor: isSelected ? '#FBBF24' : isValidMove ? '#10B981' : isLight ? '#CBD5E1' : '#64748B',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                position: 'relative',
+                                aspectRatio: '1'
+                              }}
+                            >
+                              {piece && (
+                                <motion.div
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  style={{ width: '70%', height: '70%' }}
+                                >
+                                  <PieceSVG type={piece.type} color={piece.color} />
+                                </motion.div>
+                              )}
+                              {isValidMove && !piece && (
+                                <div style={{ width: '30%', height: '30%', backgroundColor: 'rgba(16, 185, 129, 0.5)', borderRadius: '50%' }} />
+                              )}
+                            </motion.div>
+                          );
+                        })
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '1.5rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                      <div>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '600' }}>{config.player_one_label || defaultConfig.player_one_label}</div>
+                        <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>⚪ Putih</div>
+                      </div>
+                      <div style={{ fontSize: '2rem', fontWeight: '700', fontFamily: 'monospace', color: currentPlayer === COLORS.WHITE ? primaryColor : textColor }}>
+                        {formatTime(whiteTime)}
+                      </div>
+                    </div>
+                    {checkStatus === COLORS.WHITE && (
+                      <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', color: '#EF4444', padding: '0.75rem', borderRadius: '0.5rem', textAlign: 'center', fontWeight: '600' }}>
+                        ⚠️ SKAK!
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {gameOver && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+                  >
+                    <div style={{ backgroundColor: surfaceColor, borderRadius: '1.5rem', padding: '3rem', textAlign: 'center', maxWidth: '28rem' }}>
+                      <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🏆</div>
+                      <h2 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '1rem' }}>
+                        {winner === COLORS.WHITE ? 'Putih Menang!' : 'Hitam Menang!'}
+                      </h2>
+                      <p style={{ fontSize: '1.125rem', opacity: 0.8, marginBottom: '2rem' }}>
+                        {whiteTime === 0 || blackTime === 0 ? 'Waktu Habis!' : 'Skakmat!'}
+                      </p>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={startNewGame}
+                        style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`, color: 'white', padding: '1rem 2rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer', marginRight: '1rem' }}
+                      >
+                        Main Lagi
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setCurrentPage('menu')}
+                        style={{ backgroundColor: 'rgba(100, 116, 139, 0.3)', color: textColor, padding: '1rem 2rem', borderRadius: '0.75rem', border: 'none', fontSize: '1.125rem', fontWeight: '600', cursor: 'pointer' }}
+                      >
+                        Menu
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<ChessGame />, document.getElementById('root'));
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99cd107cf6f9959b',t:'MTc2Mjg1NjUwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
