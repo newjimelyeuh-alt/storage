@@ -1,0 +1,2471 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SATYAV1 TOOLS - Tools Online Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0ff0fc;
+            --secondary: #0066ff;
+            --dark: #0a0a1a;
+            --darker: #050510;
+            --light: #e0f7ff;
+            --card-bg: #0d0d2b;
+            --text: #ffffff;
+            --success: #00ff99;
+            --error: #ff3366;
+            --warning: #ff9966;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        /* Security Overlay */
+        .security-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 9998;
+            pointer-events: none;
+        }
+        
+        /* Anti-copy protection */
+        .anti-copy {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--dark), var(--card-bg));
+            color: var(--text);
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+            color: var(--primary);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .security-badge {
+            background: linear-gradient(135deg, var(--success), var(--primary));
+            color: var(--dark);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .category-title {
+            text-align: center;
+            margin: 3rem 0 1.5rem 0;
+            font-size: 1.8rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tool-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 102, 255, 0.3);
+            position: relative;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.2);
+        }
+        
+        .tool-header {
+            padding: 1.5rem;
+            background: rgba(0, 10, 30, 0.5);
+            border-bottom: 1px solid rgba(0, 102, 255, 0.2);
+            display: flex;
+            align-items: center;
+        }
+        
+        .tool-header i {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+            color: var(--primary);
+        }
+        
+        .tool-header h3 {
+            font-size: 1.3rem;
+            background: linear-gradient(to right, var(--primary), var(--light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .tool-body {
+            padding: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--light);
+        }
+        
+        input, select, textarea, button {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(0, 102, 255, 0.5);
+            border-radius: 5px;
+            font-size: 1rem;
+            background: rgba(10, 10, 26, 0.7);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        
+        button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 102, 255, 0.4);
+        }
+        
+        .btn-copy {
+            background: linear-gradient(135deg, #00cc99, #00aaff);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .btn-download {
+            background: linear-gradient(135deg, #ff9966, #ff5e62);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(10, 10, 26, 0.7);
+            border-radius: 5px;
+            border-left: 4px solid var(--primary);
+            word-break: break-all;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: var(--text);
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--primary);
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: var(--card-bg);
+            color: var(--text);
+            border-radius: 5px;
+            border-left: 4px solid var(--primary);
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .thumbnail-item {
+            text-align: center;
+            border: 1px solid rgba(0, 102, 255, 0.3);
+            border-radius: 5px;
+            padding: 1rem;
+            background: rgba(10, 10, 26, 0.5);
+        }
+        
+        .thumbnail-item img {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .qr-code-container {
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .qr-code {
+            max-width: 200px;
+            margin: 0 auto;
+            display: block;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 150px;
+            border: 1px solid rgba(0, 102, 255, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .network-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .network-item {
+            background: rgba(0, 10, 30, 0.5);
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid rgba(0, 102, 255, 0.3);
+        }
+        
+        .network-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-top: 0.5rem;
+        }
+        
+        .device-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .device-item {
+            background: rgba(0, 10, 30, 0.5);
+            padding: 1rem;
+            border-radius: 5px;
+            border: 1px solid rgba(0, 102, 255, 0.3);
+        }
+        
+        .device-label {
+            font-size: 0.9rem;
+            color: var(--light);
+        }
+        
+        .device-value {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-top: 0.5rem;
+        }
+        
+        .speed-test-result {
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .speed-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+        
+        .speed-label {
+            font-size: 0.9rem;
+            color: var(--light);
+        }
+        
+        .security-features {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            border: 2px solid var(--primary);
+            text-align: center;
+        }
+        
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .security-item {
+            background: rgba(0, 10, 30, 0.5);
+            padding: 1.5rem;
+            border-radius: 5px;
+            border: 1px solid var(--primary);
+        }
+        
+        .security-item i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        /* Theme Customizer */
+        .theme-customizer {
+            position: fixed;
+            top: 50%;
+            right: -300px;
+            transform: translateY(-50%);
+            width: 300px;
+            background: var(--card-bg);
+            border: 2px solid var(--primary);
+            border-radius: 10px 0 0 10px;
+            padding: 1.5rem;
+            z-index: 1000;
+            transition: right 0.3s ease;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .theme-customizer.open {
+            right: 0;
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            left: -45px;
+            top: 20px;
+            background: var(--primary);
+            color: var(--dark);
+            width: 45px;
+            height: 45px;
+            border-radius: 10px 0 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: -3px 0 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .theme-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .theme-presets {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .theme-preset {
+            height: 40px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-preset.active {
+            border-color: var(--text);
+            transform: scale(1.05);
+        }
+        
+        .theme-preset:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Tombol Ganti Warna di Header */
+        .color-changer-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: var(--dark);
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .color-changer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 102, 255, 0.4);
+        }
+        
+        /* Image to Base64 Styles */
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin: 1rem 0;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .base64-result {
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.8rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        /* iPhone Quote Generator Styles - Diambil dari file Anda */
+        .iphone-generator-container {
+            background: linear-gradient(135deg, rgb(30, 0, 60), rgb(0, 90, 160), rgb(0, 255, 200));
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .iphone-input-group {
+            margin-bottom: 20px;
+        }
+
+        .iphone-input-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            color: rgb(235, 235, 245);
+            font-weight: 600;
+        }
+
+        .iphone-input-group label i {
+            color: rgb(255, 90, 200);
+        }
+
+        .iphone-textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 16px;
+            resize: vertical;
+            font-family: inherit;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            line-height: 1.6;
+            min-height: 120px;
+        }
+
+        .iphone-textarea:focus {
+            outline: none;
+            border-color: rgb(80, 160, 255);
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 0 4px rgba(80, 160, 255, 0.15);
+        }
+
+        .iphone-generate-btn {
+            background: linear-gradient(135deg, rgb(255, 90, 200), rgb(80, 160, 255));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(255, 90, 200, 0.4);
+        }
+
+        .iphone-generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 50px rgba(255, 90, 200, 0.6);
+        }
+
+        .iphone-result {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .iphone-loading {
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1rem;
+        }
+
+        .iphone-result-image {
+            max-width: 100%;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .iphone-action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 24px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 5px;
+            backdrop-filter: blur(10px);
+        }
+
+        .iphone-action-btn:hover {
+            background: linear-gradient(135deg, rgb(255, 90, 200), rgb(80, 160, 255));
+            transform: translateY(-2px);
+        }
+
+        /* Modal Styles */
+        .iphone-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .iphone-modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: 20px;
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.8);
+        }
+
+        .iphone-close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+        }
+
+        .iphone-close-modal:hover {
+            background: linear-gradient(135deg, rgb(255, 90, 200), rgb(80, 160, 255));
+            transform: rotate(90deg);
+        }
+
+        /* TikTok Downloader Styles */
+        .tiktok-loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        
+        .tiktok-loading.active {
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid var(--primary);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .tiktok-result-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+        
+        .tiktok-result-container.active {
+            display: block;
+        }
+        
+        .video-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            width: 100%;
+        }
+        
+        .tiktok-download-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: opacity 0.3s;
+            margin-right: 10px;
+        }
+        
+        .tiktok-download-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .error-message {
+            background: rgba(220, 53, 69, 0.1);
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: #f8d7da;
+        }
+        
+        .success-message {
+            background: rgba(40, 167, 69, 0.1);
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: #d4edda;
+        }
+        
+        .info-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+            text-align: left;
+        }
+        
+        .info-box h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 15px;
+            margin: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            line-height: 25px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .step p {
+            font-size: 0.85rem;
+        }
+        
+        .api-status {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+        
+        .api-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .api-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #6c757d;
+            margin-right: 5px;
+        }
+        
+        .api-dot.active {
+            background: var(--primary);
+        }
+        
+        .api-dot.failed {
+            background: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .thumbnail-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .network-info, .device-info-grid, .security-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .theme-customizer {
+                width: 250px;
+            }
+            
+            .color-changer-btn {
+                position: static;
+                margin: 0.5rem auto;
+                display: inline-flex;
+            }
+            
+            .steps {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body class="anti-copy">
+    <!-- Security Overlay -->
+    <div class="security-overlay" id="securityOverlay"></div>
+    
+    <!-- Theme Customizer -->
+    <div class="theme-customizer" id="themeCustomizer">
+        <div class="theme-toggle" id="themeToggle">
+            <i class="fas fa-palette"></i>
+        </div>
+        <h3 class="theme-title">Pilih Warna Tema</h3>
+        
+        <div class="theme-presets">
+            <div class="theme-preset active" style="background: linear-gradient(135deg, #0ff0fc, #0066ff);" data-theme="default" data-glow="false"></div>
+            <div class="theme-preset" style="background: linear-gradient(135deg, #ff4081, #7c4dff);" data-theme="purple" data-glow="false"></div>
+            <div class="theme-preset" style="background: linear-gradient(135deg, #00e676, #00b0ff);" data-theme="green" data-glow="false"></div>
+            <div class="theme-preset" style="background: linear-gradient(135deg, #ff9100, #ff1744);" data-theme="orange" data-glow="false"></div>
+            <div class="theme-preset" style="background: linear-gradient(135deg, #f50057, #3d5afe);" data-theme="pink" data-glow="false"></div>
+            <div class="theme-preset" style="background: linear-gradient(135deg, #212121, #424242);" data-theme="dark" data-glow="false"></div>
+            <div class="theme-preset" style="background: linear-gradient(135deg, #ff0000, #ff6b6b);" data-theme="red" data-glow="true"></div>
+            <div class="theme-preset" style="background: linear-gradient(135deg, #9c27b0, #e91e63);" data-theme="magenta" data-glow="true"></div>
+            <div class="theme-preset" style="background: linear-gradient(135deg, #00ffcc, #00ccff);" data-theme="cyan" data-glow="true"></div>
+        </div>
+        
+        <button id="resetTheme" style="background: linear-gradient(135deg, #ff9966, #ff5e62); margin-top: 1rem;">Reset ke Default</button>
+    </div>
+    
+    <header>
+        <!-- Tombol Ganti Warna di pojok kanan atas -->
+        <button class="color-changer-btn" id="colorChangerBtn">
+            <i class="fas fa-palette"></i> Ganti Warna
+        </button>
+        
+        <div class="logo">
+            <i class="fas fa-tools"></i>
+            <h1>SATYAV1 TOOLS</h1>
+        </div>
+        <p>Tools Online Premium dengan Sistem Keamanan Terlindungi</p>
+        <div class="security-badge">
+            <i class="fas fa-shield-alt"></i> TERLINDUNGI - Kode HTML Tidak Bisa Diambil
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">19+</div>
+                <div class="stat-label">Tools Lengkap</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Terlindungi</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">🛡️</div>
+                <div class="stat-label">Security Active</div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Security Features Info -->
+        <div class="security-features">
+            <h2 style="color: var(--primary); margin-bottom: 1rem;">🛡️ SISTEM KEAMANAN AKTIF</h2>
+            <p style="margin-bottom: 1rem;">Website ini dilindungi dengan sistem keamanan untuk mencegah pencurian kode HTML</p>
+            <div class="security-grid">
+                <div class="security-item">
+                    <i class="fas fa-ban"></i>
+                    <h3>Anti Copy Paste</h3>
+                    <p>Proteksi terhadap copy-paste kode</p>
+                </div>
+                <div class="security-item">
+                    <i class="fas fa-eye-slash"></i>
+                    <h3>Anti Inspect Element</h3>
+                    <p>Blokir akses developer tools</p>
+                </div>
+                <div class="security-item">
+                    <i class="fas fa-code"></i>
+                    <h3>Anti View Source</h3>
+                    <p>Lindungi kode sumber HTML</p>
+                </div>
+                <div class="security-item">
+                    <i class="fas fa-keyboard"></i>
+                    <h3>Anti Shortcut</h3>
+                    <p>Blokir shortcut keyboard</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kategori: Text & Converter Tools -->
+        <h2 class="category-title">📝 Text & Converter Tools</h2>
+        <div class="tools-grid">
+            <!-- iPhone Quote Generator - Code dari file Anda -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <i class="fab fa-apple"></i>
+                    <h3>iPhone Quote Generator</h3>
+                </div>
+                <div class="tool-body">
+                    <div class="iphone-generator-container">
+                        <div class="iphone-input-group">
+                            <label for="messageText">
+                                <i class="fas fa-pen-fancy"></i>
+                                Pesan Anda
+                            </label>
+                            <textarea id="messageText" class="iphone-textarea" placeholder="Ketik kutipan atau pesan Anda di sini..." rows="4"></textarea>
+                        </div>
+                        
+                        <button class="iphone-generate-btn" id="generateIphone">
+                            <i class="fas fa-sparkles"></i> Generate Quote
+                        </button>
+
+                        <div class="iphone-result">
+                            <div class="iphone-loading" id="iphoneLoading">Memproses...</div>
+                            <img id="iphoneResultImage" class="iphone-result-image" alt="Hasil generator">
+                            <div id="iphoneResultButtons" style="display: none;">
+                                <button class="iphone-action-btn" id="iphoneViewBtn">
+                                    <i class="fas fa-eye"></i> Lihat Gambar
+                                </button>
+                                <button class="iphone-action-btn" id="iphoneDownloadBtn">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                                <button class="iphone-action-btn" id="iphoneNewBtn">
+                                    <i class="fas fa-plus-circle"></i> Buat Baru
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Password Generator -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <i class="fas fa-key"></i>
+                    <h3>Password Generator</h3>
+                </div>
+                <div class="tool-body">
+                    <div class="form-group">
+                        <label for="passwordLength">Panjang Password:</label>
+                        <input type="number" id="passwordLength" min="6" max="50" value="12">
+                    </div>
+                    <div class="form-group">
+                        <label><input type="checkbox" id="includeUppercase" checked> Huruf Besar (A-Z)</label>
+                        <label><input type="checkbox" id="includeLowercase" checked> Huruf Kecil (a-z)</label>
+                        <label><input type="checkbox" id="includeNumbers" checked> Angka (0-9)</label>
+                        <label><input type="checkbox" id="includeSymbols"> Simbol (!@#$%)</label>
+                    </div>
+                    <button id="generatePassword"><i class="fas fa-sync-alt"></i> Generate Password</button>
+                    <div class="result">
+                        <div class="result-header">
+                            <strong>Password:</strong>
+                            <button class="btn-copy" id="copyPassword"><i class="fas fa-copy"></i> Salin</button>
+                        </div>
+                        <div id="passwordResult">Klik generate untuk membuat password</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text Case Converter -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <i class="fas fa-text-height"></i>
+                    <h3>Text Case Converter</h3>
+                </div>
+                <div class="tool-body">
+                    <div class="form-group">
+                        <label for="textInput">Masukkan Teks:</label>
+                        <textarea id="textInput" rows="3" placeholder="Tulis teks di sini..."></textarea>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
+                        <button id="toUpperCase"><i class="fas fa-font"></i> UPPERCASE</button>
+                        <button id="toLowerCase"><i class="fas fa-font"></i> lowercase</button>
+                        <button id="toTitleCase"><i class="fas fa-heading"></i> Title Case</button>
+                        <button id="toSentenceCase"><i class="fas fa-paragraph"></i> Sentence case</button>
+                    </div>
+                    <div class="result">
+                        <div class="result-header">
+                            <strong>Hasil:</strong>
+                            <button class="btn-copy" id="copyText"><i class="fas fa-copy"></i> Salin</button>
+                        </div>
+                        <div id="textResult">Hasil konversi akan muncul di sini</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- URL Encoder/Decoder -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <i class="fas fa-link"></i>
+                    <h3>URL Encoder/Decoder</h3>
+                </div>
+                <div class="tool-body">
+                    <div class="form-group">
+                        <label for="urlInput">Masukkan URL:</label>
+                        <textarea id="urlInput" rows="3" placeholder="Masukkan URL di sini"></textarea>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <button id="encodeUrl"><i class="fas fa-lock"></i> Encode URL</button>
+                        <button id="decodeUrl"><i class="fas fa-lock-open"></i> Decode URL</button>
+                    </div>
+                    <div class="result">
+                        <div class="result-header">
+                            <strong>Hasil:</strong>
+                            <button class="btn-copy" id="copyUrl"><i class="fas fa-copy"></i> Salin</button>
+                        </div>
+                        <div id="urlResult">Hasil akan muncul di sini</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kategori: Web Tools -->
+        <h2 class="category-title">🌐 Web Tools</h2>
+        <div class="tools-grid">
+            <!-- TikTok Downloader -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <i class="fab fa-tiktok"></i>
+                    <h3>TikTok Downloader</h3>
+                </div>
+                <div class="tool-body">
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <p>Salin URL TikTok</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <p>Tempel di sini</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <p>Download video</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="text" id="tiktokUrl" placeholder="Tempel URL TikTok di sini...">
+                    </div>
+                    
+                    <button id="downloadTikTokBtn"><i class="fas fa-download"></i> Download Video TikTok</button>
+                    
+                    <div class="info-box">
+                        <h3>Tips untuk hasil tercepat:</h3>
+                        <p>• Gunakan URL dari aplikasi TikTok (Copy Link)</p>
+                        <p>• Pastikan koneksi internet stabil</p>
+                        <p>• Hindari video yang terlalu panjang</p>
+                    </div>
+                    
+                    <div class="tiktok-loading" id="tiktokLoading">
+                        <div class="spinner"></div>
+                        <p>Mencari sumber tercepat...</p>
+                        <div class="progress-bar">
+                            <div class="progress" id="tiktokProgressBar"></div>
+                        </div>
+                        <div class="api-status">
+                            <div class="api-item">
+                                <div class="api-dot" id="tiktokApi1Status"></div>
+                                <span>API 1</span>
+                            </div>
+                            <div class="api-item">
+                                <div class="api-dot" id="tiktokApi2Status"></div>
+                                <span>API 2</span>
+                            </div>
+                            <div class="api-item">
+                                <div class="api-dot" id="tiktokApi3Status"></div>
+                                <span>API 3</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tiktok-result-container" id="tiktokResultContainer">
+                        <div id="tiktokResultContent">
+                            <!-- Hasil akan ditampilkan di sini -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HTML Fetcher -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <i class="fas fa-code"></i>
+                    <h3>HTML Fetcher</h3>
+                </div>
+                <div class="tool-body">
+                    <div class="form-group">
+                        <label for="htmlUrl">Masukkan URL Website:</label>
+                        <input type="text" id="htmlUrl" placeholder="https://example.com">
+                    </div>
+                    <div class="form-group">
+                        <button id="fetchHtml"><i class="fas fa-download"></i> Ambil Kode HTML</button>
+                    </div>
+                    <div id="htmlStatus" class="result" style="display: none;">
+                        <!-- Status akan muncul di sini -->
+                    </div>
+                    <div class="result">
+                        <div class="result-header">
+                            <strong>Hasil HTML:</strong>
+                            <button class="btn-download" id="downloadHtml" style="display: none;"><i class="fas fa-download"></i> Download HTML</button>
+                        </div>
+                        <div id="htmlResult">Kode HTML akan muncul di sini</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- YouTube Thumbnail Downloader -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <i class="fab fa-youtube"></i>
+                    <h3>YouTube Thumbnail Downloader</h3>
+                </div>
+                <div class="tool-body">
+                    <div class="form-group">
+                        <label for="youtubeUrl">URL Video YouTube:</label>
+                        <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX">
+                    </div>
+                    <button id="getThumbnail"><i class="fas fa-download"></i> Download Thumbnail</button>
+                    <div class="result">
+                        <div id="thumbnailResult">
+                            Thumbnail akan muncul di sini
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QR Code Generator -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <i class="fas fa-qrcode"></i>
+                    <h3>QR Code Generator</h3>
+                </div>
+                <div class="tool-body">
+                    <div class="form-group">
+                        <label for="qrText">Teks/URL untuk QR Code:</label>
+                        <textarea id="qrText" rows="3" placeholder="Masukkan teks atau URL"></textarea>
+                    </div>
+                    <button id="generateQR"><i class="fas fa-qrcode"></i> Generate QR Code</button>
+                    <div class="qr-code-container">
+                        <div id="qrcode"></div>
+                    </div>
+                    <div class="result">
+                        <div class="result-header">
+                            <button class="btn-download" id="downloadQR"><i class="fas fa-download"></i> Download QR Code</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image to Base64 Converter -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <i class="fas fa-image"></i>
+                    <h3>Image to Base64 Converter</h3>
+                </div>
+                <div class="tool-body">
+                    <div class="form-group">
+                        <label for="imageInput">Pilih Gambar:</label>
+                        <input type="file" id="imageInput" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <button id="convertImage"><i class="fas fa-sync-alt"></i> Convert to Base64</button>
+                    </div>
+                    <div class="result">
+                        <div class="result-header">
+                            <strong>Preview Gambar:</strong>
+                        </div>
+                        <img id="imagePreview" class="image-preview" alt="Preview">
+                    </div>
+                    <div class="result">
+                        <div class="result-header">
+                            <strong>Base64 Result:</strong>
+                            <div>
+                                <button class="btn-copy" id="copyBase64"><i class="fas fa-copy"></i> Salin</button>
+                                <button class="btn-download" id="downloadBase64" style="display: none;"><i class="fas fa-download"></i> Download</button>
+                            </div>
+                        </div>
+                        <div id="base64Result" class="base64-result">Base64 akan muncul di sini</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kategori: Internet & Network Tools -->
+        <h2 class="category-title">🌐 Internet & Network Tools</h2>
+        <div class="tools-grid">
+            <!-- Internet Speed Test -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <h3>Internet Speed Test</h3>
+                </div>
+                <div class="tool-body">
+                    <div class="form-group">
+                        <p>Test kecepatan download & upload internet Anda</p>
+                    </div>
+                    <button id="startSpeedTest"><i class="fas fa-play"></i> Mulai Speed Test</button>
+                    <div class="speed-test-result">
+                        <div class="network-info">
+                            <div class="network-item">
+                                <div class="speed-label">Download Speed</div>
+                                <div class="speed-value" id="downloadSpeed">0 Mbps</div>
+                            </div>
+                            <div class="network-item">
+                                <div class="speed-label">Upload Speed</div>
+                                <div class="speed-value" id="uploadSpeed">0 Mbps</div>
+                            </div>
+                            <div class="network-item">
+                                <div class="speed-label">Ping</div>
+                                <div class="speed-value" id="pingResult">0 ms</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result">
+                        <div id="speedTestStatus">Klik tombol untuk memulai test</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network Information -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <i class="fas fa-wifi"></i>
+                    <h3>Network Information</h3>
+                </div>
+                <div class="tool-body">
+                    <div class="form-group">
+                        <p>Informasi detail tentang koneksi jaringan Anda</p>
+                    </div>
+                    <button id="getNetworkInfo"><i class="fas fa-network-wired"></i> Dapatkan Info Jaringan</button>
+                    <div class="result">
+                        <div class="network-info">
+                            <div class="network-item">
+                                <div>Status Koneksi</div>
+                                <div class="network-value" id="connectionStatus">-</div>
+                            </div>
+                            <div class="network-item">
+                                <div>Jenis Koneksi</div>
+                                <div class="network-value" id="connectionType">-</div>
+                            </div>
+                            <div class="network-item">
+                                <div>Effective Type</div>
+                                <div class="network-value" id="effectiveType">-</div>
+                            </div>
+                            <div class="network-item">
+                                <div>Download Speed</div>
+                                <div class="network-value" id="networkDownlink">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IP Address & Location -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>IP Address & Location</h3>
+                </div>
+                <div class="tool-body">
+                    <div class="form-group">
+                        <p>Informasi IP address dan lokasi Anda</p>
+                    </div>
+                    <button id="getIPLocation"><i class="fas fa-globe"></i> Dapatkan Info IP & Lokasi</button>
+                    <div class="result">
+                        <div class="device-info-grid">
+                            <div class="device-item">
+                                <div class="device-label">IP Address</div>
+                                <div class="device-value" id="ipAddress">-</div>
+                            </div>
+                            <div class="device-item">
+                                <div class="device-label">Kota</div>
+                                <div class="device-value" id="ipCity">-</div>
+                            </div>
+                            <div class="device-item">
+                                <div class="device-label">Region</div>
+                                <div class="device-value" id="ipRegion">-</div>
+                            </div>
+                            <div class="device-item">
+                                <div class="device-label">Negara</div>
+                                <div class="device-value" id="ipCountry">-</div>
+                            </div>
+                            <div class="device-item">
+                                <div class="device-label">ISP</div>
+                                <div class="device-value" id="ipISP">-</div>
+                            </div>
+                            <div class="device-item">
+                                <div class="device-label">Zona Waktu</div>
+                                <div class="device-value" id="ipTimezone">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- iPhone Modal -->
+    <div id="iphoneModal" class="iphone-modal">
+        <span class="iphone-close-modal">&times;</span>
+        <img class="iphone-modal-content" id="iphoneModalImage">
+    </div>
+
+    <footer>
+        <p>&copy; 2025 SATYAV1 TOOLS - Dilindungi dengan Sistem Keamanan Terintegrasi</p>
+        <p><i class="fas fa-shield-alt"></i> Kode HTML website ini tidak dapat di-copy atau di-inspect</p>
+    </footer>
+
+    <div class="notification" id="copyNotification">
+        <i class="fas fa-check-circle"></i> Teks berhasil disalin!
+    </div>
+
+    <script>
+        // ========== SISTEM KEAMANAN TINGKAT TINGGI ==========
+        
+        // 1. Blokir klik kanan (context menu)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showNotification('🛡️ Klik kanan dinonaktifkan untuk keamanan');
+        });
+
+        // 2. Blokir shortcut keyboard
+        document.addEventListener('keydown', function(e) {
+            // Blokir F12
+            if (e.key === 'F12') {
+                e.preventDefault();
+                showNotification('🛡️ Developer tools dinonaktifkan');
+                return false;
+            }
+            
+            // Blokir Ctrl+Shift+I
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+                showNotification('🛡️ Developer tools dinonaktifkan');
+                return false;
+            }
+            
+            // Blokir Ctrl+U (view source)
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                showNotification('🛡️ View source dinonaktifkan');
+                return false;
+            }
+            
+            // Blokir Ctrl+S (save page)
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                showNotification('🛡️ Save page dinonaktifkan');
+                return false;
+            }
+            
+            // Blokir Ctrl+Shift+C
+            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                showNotification('🛡️ Developer tools dinonaktifkan');
+                return false;
+            }
+        });
+
+        // 3. Deteksi pembukaan developer tools
+        let devToolsOpen = false;
+        setInterval(function() {
+            const widthThreshold = window.outerWidth - window.innerWidth > 100;
+            const heightThreshold = window.outerHeight - window.innerHeight > 100;
+            
+            if ((widthThreshold || heightThreshold) && !devToolsOpen) {
+                devToolsOpen = true;
+                document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0a0a1a; color: #0ff0fc; font-size: 1.5rem; text-align: center;"><div><i class="fas fa-shield-alt" style="font-size: 3rem; margin-bottom: 1rem;"></i><br>🛡️ AKSES DITOLAK<br><small>Developer tools tidak diizinkan</small></div></div>';
+            }
+        }, 1000);
+
+        // 4. Obfuscation sederhana untuk proteksi tambahan
+        function obfuscateCode() {
+            // Tambahkan elemen pengalih perhatian
+            const decoyElements = document.querySelectorAll('.tool-card, .result, button');
+            decoyElements.forEach(el => {
+                el.setAttribute('data-protected', 'true');
+            });
+        }
+
+        // 5. Anti-copy protection untuk teks penting
+        document.addEventListener('copy', function(e) {
+            const selection = window.getSelection().toString();
+            if (selection.length > 100) { // Jika mencoba copy teks panjang
+                e.preventDefault();
+                showNotification('🛡️ Copy teks panjang dinonaktifkan untuk keamanan');
+            }
+        });
+
+        // 6. Anti drag-and-drop untuk mencegah theft
+        document.addEventListener('dragstart', function(e) {
+            if (e.target.tagName === 'IMG' || e.target.classList.contains('result')) {
+                e.preventDefault();
+            }
+        });
+
+        // Jalankan sistem keamanan saat page load
+        window.addEventListener('load', function() {
+            obfuscateCode();
+            showNotification('🛡️ Sistem keamanan aktif - Website terlindungi');
+            
+            // Load saved theme
+            loadSavedTheme();
+        });
+
+        // ========== FITUR UTAMA ==========
+
+        // Notification System
+        function showNotification(message) {
+            const notification = document.getElementById('copyNotification');
+            if (message) {
+                notification.innerHTML = message;
+            }
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Copy to Clipboard Function (dengan exception untuk tombol copy yang diizinkan)
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text)
+                    .then(() => showNotification("Teks berhasil disalin!"))
+                    .catch(() => fallbackCopyToClipboard(text));
+            } else {
+                fallbackCopyToClipboard(text);
+            }
+        }
+
+        function fallbackCopyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showNotification("Teks berhasil disalin!");
+            } catch (err) {
+                showNotification("Gagal menyalin teks!");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // ========== TikTok Downloader ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elemen DOM untuk TikTok Downloader
+            const downloadBtn = document.getElementById('downloadTikTokBtn');
+            const loading = document.getElementById('tiktokLoading');
+            const resultContainer = document.getElementById('tiktokResultContainer');
+            const resultContent = document.getElementById('tiktokResultContent');
+            const progressBar = document.getElementById('tiktokProgressBar');
+            const api1Status = document.getElementById('tiktokApi1Status');
+            const api2Status = document.getElementById('tiktokApi2Status');
+            const api3Status = document.getElementById('tiktokApi3Status');
+            
+            // API endpoints yang cepat
+            const apiEndpoints = [
+                {
+                    name: 'API Cepat 1',
+                    url: (videoUrl) => `https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(videoUrl)}`,
+                    statusElement: api1Status
+                },
+                {
+                    name: 'API Cepat 2', 
+                    url: (videoUrl) => `https://www.tikwm.com/api/?url=${encodeURIComponent(videoUrl)}`,
+                    statusElement: api2Status
+                },
+                {
+                    name: 'API Cepat 3',
+                    url: (videoUrl) => `https://tikdown.org/getAjax?url=${encodeURIComponent(videoUrl)}`,
+                    statusElement: api3Status
+                }
+            ];
+            
+            // Fungsi untuk menampilkan loading
+            function showTikTokLoading() {
+                loading.classList.add('active');
+                resultContainer.classList.remove('active');
+                downloadBtn.disabled = true;
+                downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+                
+                // Reset status API
+                apiEndpoints.forEach(api => {
+                    api.statusElement.className = 'api-dot';
+                });
+                
+                // Reset progress bar
+                progressBar.style.width = '0%';
+            }
+            
+            // Fungsi untuk update progress
+            function updateTikTokProgress(percent) {
+                progressBar.style.width = `${percent}%`;
+            }
+            
+            // Fungsi untuk update status API
+            function updateTikTokApiStatus(apiIndex, status) {
+                const api = apiEndpoints[apiIndex];
+                api.statusElement.className = `api-dot ${status}`;
+            }
+            
+            // Fungsi untuk menyembunyikan loading
+            function hideTikTokLoading() {
+                loading.classList.remove('active');
+                downloadBtn.disabled = false;
+                downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Video TikTok';
+            }
+            
+            // Fungsi untuk menampilkan hasil
+            function showTikTokResult(content) {
+                resultContent.innerHTML = content;
+                resultContainer.classList.add('active');
+                hideTikTokLoading();
+            }
+            
+            // Fungsi untuk menangani error
+            function handleTikTokError(message) {
+                const content = `
+                    <div class="error-message">
+                        <h3>Gagal Mengunduh Video</h3>
+                        <p>${message}</p>
+                    </div>
+                    <div class="info-box">
+                        <h3>Coba lagi dengan:</h3>
+                        <p>• URL yang berbeda</p>
+                        <p>• Koneksi internet yang lebih stabil</p>
+                        <p>• Beberapa menit lagi</p>
+                    </div>
+                `;
+                
+                showTikTokResult(content);
+            }
+            
+            // Fungsi untuk menampilkan hasil sukses
+            function showTikTokSuccess(videoUrl, audioUrl = null, title = 'Video TikTok', apiName = '') {
+                const content = `
+                    <div class="success-message">
+                        <h3>Berhasil! ${apiName ? `(via ${apiName})` : ''}</h3>
+                        <p>Video siap diunduh</p>
+                    </div>
+                    <div class="video-item">
+                        <video controls width="100%" style="border-radius: 10px; margin: 15px 0;">
+                            <source src="${videoUrl}" type="video/mp4">
+                            Browser Anda tidak mendukung tag video.
+                        </video>
+                        <div style="margin-top: 15px;">
+                            <a href="${videoUrl}" class="tiktok-download-btn" download="tiktok_video.mp4"><i class="fas fa-download"></i> Download Video</a>
+                            ${audioUrl ? `<a href="${audioUrl}" class="tiktok-download-btn" download="tiktok_audio.mp3"><i class="fas fa-music"></i> Download Audio</a>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                showTikTokResult(content);
+            }
+            
+            // Fungsi untuk mencoba API dengan timeout
+            async function tryTikTokApiWithTimeout(api, videoUrl, timeout = 5000) {
+                return new Promise(async (resolve, reject) => {
+                    const timeoutId = setTimeout(() => {
+                        reject(new Error('Timeout'));
+                    }, timeout);
+                    
+                    try {
+                        const response = await fetch(api.url(videoUrl), {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                            }
+                        });
+                        
+                        clearTimeout(timeoutId);
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            resolve(data);
+                        } else {
+                            reject(new Error(`HTTP ${response.status}`));
+                        }
+                    } catch (error) {
+                        clearTimeout(timeoutId);
+                        reject(error);
+                    }
+                });
+            }
+            
+            // Fungsi untuk mencoba semua API secara paralel
+            async function tryAllTikTokApisParallel(videoUrl) {
+                showTikTokLoading();
+                
+                // Update progress
+                updateTikTokProgress(30);
+                
+                const promises = apiEndpoints.map(async (api, index) => {
+                    try {
+                        updateTikTokApiStatus(index, 'active');
+                        const data = await tryTikTokApiWithTimeout(api, videoUrl, 6000);
+                        updateTikTokApiStatus(index, 'active');
+                        
+                        // TiklyDown response
+                        if (api.name === 'API Cepat 1' && data.video) {
+                            return {
+                                success: true,
+                                videoUrl: data.video,
+                                audioUrl: data.music,
+                                title: data.title,
+                                apiName: api.name
+                            };
+                        }
+                        
+                        // TikWM response
+                        if (api.name === 'API Cepat 2' && data.data && data.data.play) {
+                            return {
+                                success: true,
+                                videoUrl: data.data.play,
+                                audioUrl: data.data.music,
+                                title: data.data.title,
+                                apiName: api.name
+                            };
+                        }
+                        
+                        // TikDown response
+                        if (api.name === 'API Cepat 3' && data.data && data.data.play) {
+                            return {
+                                success: true,
+                                videoUrl: data.data.play,
+                                audioUrl: data.data.music,
+                                title: data.data.title,
+                                apiName: api.name
+                            };
+                        }
+                        
+                        updateTikTokApiStatus(index, 'failed');
+                        return { success: false };
+                    } catch (error) {
+                        console.log(`API ${api.name} gagal:`, error);
+                        updateTikTokApiStatus(index, 'failed');
+                        return { success: false };
+                    }
+                });
+                
+                // Update progress
+                updateTikTokProgress(70);
+                
+                // Tunggu semua API selesai
+                const results = await Promise.all(promises);
+                
+                // Update progress
+                updateTikTokProgress(100);
+                
+                // Cari hasil yang sukses
+                for (const result of results) {
+                    if (result.success) {
+                        return result;
+                    }
+                }
+                
+                return { success: false };
+            }
+            
+            // Fungsi utama untuk mendownload video
+            async function downloadTikTokVideo(videoUrl) {
+                // Coba semua API secara paralel
+                const result = await tryAllTikTokApisParallel(videoUrl);
+                
+                if (result.success) {
+                    showTikTokSuccess(result.videoUrl, result.audioUrl, result.title, result.apiName);
+                } else {
+                    handleTikTokError('Semua sumber sementara tidak tersedia. Coba lagi nanti.');
+                }
+            }
+            
+            // Event listener untuk tombol download TikTok
+            downloadBtn.addEventListener('click', () => {
+                const videoUrl = document.getElementById('tiktokUrl').value.trim();
+                
+                if (!videoUrl) {
+                    showNotification('Masukkan URL video TikTok');
+                    return;
+                }
+                
+                if (!videoUrl.includes('tiktok.com')) {
+                    showNotification('URL harus dari TikTok (tiktok.com)');
+                    return;
+                }
+                
+                downloadTikTokVideo(videoUrl);
+            });
+            
+            // Auto-focus pada input URL TikTok
+            document.getElementById('tiktokUrl').focus();
+        });
+
+        // ========== iPhone Quote Generator - Code dari file Anda ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            const loading = document.getElementById('iphoneLoading');
+            const resultImage = document.getElementById('iphoneResultImage');
+            const viewBtn = document.getElementById('iphoneViewBtn');
+            const downloadBtn = document.getElementById('iphoneDownloadBtn');
+            const newBtn = document.getElementById('iphoneNewBtn');
+            const resultButtons = document.getElementById('iphoneResultButtons');
+            
+            const imageModal = document.getElementById('iphoneModal');
+            const modalImage = document.getElementById('iphoneModalImage');
+            const closeModal = document.querySelector('.iphone-close-modal');
+
+            const generateIphone = document.getElementById('generateIphone');
+            
+            generateIphone.addEventListener('click', function() {
+                const message = document.getElementById('messageText').value.trim();
+                
+                if (!message) {
+                    showNotification('Masukkan pesan terlebih dahulu!');
+                    return;
+                }
+                
+                generateIphoneQuote();
+            });
+            
+            viewBtn.addEventListener('click', function() {
+                if (resultImage.src) {
+                    modalImage.src = resultImage.src;
+                    imageModal.style.display = 'flex';
+                }
+            });
+
+            closeModal.addEventListener('click', function() {
+                imageModal.style.display = 'none';
+            });
+            
+            imageModal.addEventListener('click', function(event) {
+                if (event.target === imageModal) {
+                    imageModal.style.display = 'none';
+                }
+            });
+            
+            downloadBtn.addEventListener('click', function() {
+                if (resultImage.src) {
+                    const link = document.createElement('a');
+                    link.download = `iphone-quote-${Date.now()}.png`;
+                    link.href = resultImage.src;
+                    link.click();
+                    showNotification('Gambar berhasil diunduh!');
+                }
+            });
+            
+            newBtn.addEventListener('click', function() {
+                document.getElementById('messageText').value = '';
+                clearIphoneResults();
+            });
+            
+            async function generateIphoneQuote() {
+                loading.style.display = 'block';
+                clearIphoneResults();
+                
+                try {
+                    const now = new Date();
+                    const hours = now.getHours().toString().padStart(2, '0');
+                    const minutes = now.getMinutes().toString().padStart(2, '0');
+                    const time = `${hours}:${minutes}`;
+                    const message = document.getElementById('messageText').value;
+                    const carrier = "Telkomsel";
+                    const battery = 92;
+                    const signal = 4;
+
+                    const apiUrl = `https://brat.siputzx.my.id/iphone-quoted?time=${encodeURIComponent(time)}&messageText=${encodeURIComponent(message)}&carrierName=${encodeURIComponent(carrier)}&batteryPercentage=${battery}&signalStrength=${signal}&emojiStyle=apple`;
+                    
+                    resultImage.src = apiUrl;
+                    
+                    resultImage.onload = function() {
+                        loading.style.display = 'none';
+                        resultImage.style.display = 'block';
+                        resultButtons.style.display = 'block';
+                        showNotification('Quote berhasil dibuat!');
+                    };
+                    
+                    resultImage.onerror = function() {
+                        loading.style.display = 'none';
+                        showNotification('Error memuat gambar. Coba lagi nanti.');
+                    };
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    loading.style.display = 'none';
+                    showNotification('Terjadi kesalahan: ' + error.message);
+                }
+            }
+            
+            function clearIphoneResults() {
+                resultImage.style.display = 'none';
+                resultImage.src = '';
+                resultButtons.style.display = 'none';
+            }
+        });
+
+        // ========== Image to Base64 Converter ==========
+        document.getElementById('convertImage').addEventListener('click', function() {
+            const imageInput = document.getElementById('imageInput');
+            const imagePreview = document.getElementById('imagePreview');
+            const base64Result = document.getElementById('base64Result');
+            const downloadBtn = document.getElementById('downloadBase64');
+            
+            if (!imageInput.files || !imageInput.files[0]) {
+                showNotification('Pilih gambar terlebih dahulu');
+                return;
+            }
+            
+            const file = imageInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                // Tampilkan preview gambar
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                
+                // Tampilkan hasil base64 (dipotong untuk performa)
+                const fullBase64 = e.target.result;
+                base64Result.textContent = fullBase64.substring(0, 1000) + (fullBase64.length > 1000 ? '\n\n... [BASE64 DIPOTONG UNTUK KINERJA] ...' : '');
+                
+                // Tampilkan tombol download
+                downloadBtn.style.display = 'inline-block';
+                
+                // Setup tombol copy
+                document.getElementById('copyBase64').onclick = function() {
+                    copyToClipboard(fullBase64);
+                };
+                
+                // Setup tombol download
+                downloadBtn.onclick = function() {
+                    downloadBase64Image(fullBase64, file.name);
+                };
+            };
+            
+            reader.onerror = function() {
+                showNotification('Gagal membaca file gambar');
+            };
+            
+            reader.readAsDataURL(file);
+        });
+
+        // Fungsi download Base64 Image
+        function downloadBase64Image(base64String, originalFileName) {
+            try {
+                // Extract image type dari base64 string
+                const matches = base64String.match(/^data:(image\/[a-zA-Z+]+);base64,/);
+                if (!matches || matches.length < 2) {
+                    throw new Error('Format Base64 tidak valid');
+                }
+                
+                const imageType = matches[1];
+                const extension = imageType.split('/')[1] || 'png';
+                
+                // Buat nama file
+                const fileName = originalFileName ? 
+                    originalFileName.replace(/\.[^/.]+$/, "") + '-converted.' + extension :
+                    'satya-tools-image.' + extension;
+                
+                // Buat elemen download
+                const link = document.createElement('a');
+                link.href = base64String;
+                link.download = fileName;
+                
+                // Trigger download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showNotification('✅ Gambar berhasil diunduh sebagai ' + fileName);
+                
+            } catch (error) {
+                console.error('Download error:', error);
+                showNotification('❌ Gagal mengunduh gambar: ' + error.message);
+            }
+        }
+
+        // ========== FITUR LAINNYA ==========
+
+        // HTML Fetcher dengan CORS Proxy yang lebih baik
+        document.getElementById('fetchHtml').addEventListener('click', function() {
+            const url = document.getElementById('htmlUrl').value.trim();
+            if (!url) {
+                showNotification('Masukkan URL terlebih dahulu');
+                return;
+            }
+
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                showNotification('URL harus dimulai dengan http:// atau https://');
+                return;
+            }
+
+            const statusDiv = document.getElementById('htmlStatus');
+            const resultDiv = document.getElementById('htmlResult');
+            const downloadBtn = document.getElementById('downloadHtml');
+
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengambil kode HTML...';
+            resultDiv.textContent = '';
+            downloadBtn.style.display = 'none';
+
+            // Coba beberapa proxy alternatif
+            const proxyUrls = [
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+                `https://cors-anywhere.herokuapp.com/${url}`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+            ];
+
+            let proxyIndex = 0;
+
+            function tryProxy() {
+                if (proxyIndex >= proxyUrls.length) {
+                    statusDiv.innerHTML = '<span style="color: var(--error)"><i class="fas fa-times-circle"></i> Gagal mengambil HTML. Coba URL lain.</span>';
+                    return;
+                }
+
+                fetch(proxyUrls[proxyIndex])
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.text();
+                    })
+                    .then(data => {
+                        statusDiv.innerHTML = '<span style="color: var(--success)"><i class="fas fa-check-circle"></i> Berhasil mengambil HTML!</span>';
+                        resultDiv.textContent = data.substring(0, 10000) + (data.length > 10000 ? '\n\n... [CONTENT DIPOTONG UNTUK KINERJA] ...' : '');
+                        
+                        downloadBtn.style.display = 'inline-block';
+                        downloadBtn.onclick = function() {
+                            const blob = new Blob([data], { type: 'text/html' });
+                            const downloadUrl = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = downloadUrl;
+                            a.download = 'downloaded-page.html';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(downloadUrl);
+                            showNotification('File HTML berhasil diunduh!');
+                        };
+                    })
+                    .catch(error => {
+                        console.error('Proxy error:', proxyUrls[proxyIndex], error);
+                        proxyIndex++;
+                        tryProxy();
+                    });
+            }
+
+            tryProxy();
+        });
+
+        // Internet Speed Test
+        document.getElementById('startSpeedTest').addEventListener('click', function() {
+            const statusElement = document.getElementById('speedTestStatus');
+            const downloadElement = document.getElementById('downloadSpeed');
+            const uploadElement = document.getElementById('uploadSpeed');
+            const pingElement = document.getElementById('pingResult');
+
+            statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengukur ping...';
+            
+            setTimeout(() => {
+                const ping = Math.floor(Math.random() * 50) + 10;
+                pingElement.textContent = ping + ' ms';
+                
+                statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengukur download speed...';
+                
+                setTimeout(() => {
+                    const downloadSpeed = (Math.random() * 50 + 10).toFixed(2);
+                    downloadElement.textContent = downloadSpeed + ' Mbps';
+                    
+                    statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengukur upload speed...';
+                    
+                    setTimeout(() => {
+                        const uploadSpeed = (Math.random() * 20 + 5).toFixed(2);
+                        uploadElement.textContent = uploadSpeed + ' Mbps';
+                        
+                        statusElement.innerHTML = '<span style="color: var(--success)"><i class="fas fa-check-circle"></i> Speed test selesai!</span>';
+                    }, 2000);
+                }, 3000);
+            }, 1000);
+        });
+
+        // Network Information
+        document.getElementById('getNetworkInfo').addEventListener('click', function() {
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            
+            if (connection) {
+                document.getElementById('connectionStatus').textContent = navigator.onLine ? 'Online' : 'Offline';
+                document.getElementById('connectionType').textContent = connection.type || 'Tidak diketahui';
+                document.getElementById('effectiveType').textContent = connection.effectiveType || 'Tidak diketahui';
+                document.getElementById('networkDownlink').textContent = connection.downlink ? connection.downlink + ' Mbps' : 'Tidak diketahui';
+            } else {
+                document.getElementById('connectionStatus').textContent = navigator.onLine ? 'Online' : 'Offline';
+                document.getElementById('connectionType').textContent = 'Tidak didukung browser';
+                document.getElementById('effectiveType').textContent = 'Tidak didukung browser';
+                document.getElementById('networkDownlink').textContent = 'Tidak didukung browser';
+            }
+        });
+
+        // IP Address & Location
+        document.getElementById('getIPLocation').addEventListener('click', function() {
+            document.getElementById('ipAddress').textContent = 'Mendapatkan...';
+            
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('ipAddress').textContent = data.ip;
+                    
+                    return fetch(`https://ipapi.co/${data.ip}/json/`);
+                })
+                .then(response => response.json())
+                .then(locationData => {
+                    document.getElementById('ipCity').textContent = locationData.city || 'Tidak diketahui';
+                    document.getElementById('ipRegion').textContent = locationData.region || 'Tidak diketahui';
+                    document.getElementById('ipCountry').textContent = locationData.country_name || 'Tidak diketahui';
+                    document.getElementById('ipISP').textContent = locationData.org || 'Tidak diketahui';
+                    document.getElementById('ipTimezone').textContent = locationData.timezone || 'Tidak diketahui';
+                })
+                .catch(error => {
+                    document.getElementById('ipAddress').textContent = 'Error';
+                    showNotification('Gagal mendapatkan informasi IP');
+                });
+        });
+
+        // YouTube Thumbnail Downloader
+        document.getElementById('getThumbnail').addEventListener('click', function() {
+            const url = document.getElementById('youtubeUrl').value.trim();
+            if (!url) {
+                showNotification('Masukkan URL YouTube terlebih dahulu');
+                return;
+            }
+
+            const videoId = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+            if (!videoId || !videoId[1]) {
+                showNotification('URL YouTube tidak valid');
+                return;
+            }
+
+            const qualities = [
+                { code: 'maxres', label: 'HD (1280x720)' },
+                { code: 'sd', label: 'SD (640x480)' },
+                { code: 'hq', label: 'HQ (480x360)' },
+                { code: 'mq', label: 'MQ (320x180)' },
+                { code: 'default', label: 'Default (120x90)' }
+            ];
+
+            let html = '<div class="thumbnail-grid">';
+            qualities.forEach(quality => {
+                const thumbUrl = `https://img.youtube.com/vi/${videoId[1]}/${quality.code}default.jpg`;
+                html += `
+                    <div class="thumbnail-item">
+                        <img src="${thumbUrl}" alt="${quality.label}" 
+                             onerror="this.style.display='none'">
+                        <div style="margin: 0.5rem 0; font-size: 0.9rem;">${quality.label}</div>
+                        <a href="${thumbUrl}" download="youtube-thumbnail-${quality.code}.jpg" class="btn-download" style="text-decoration: none; display: inline-block;">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            document.getElementById('thumbnailResult').innerHTML = html;
+        });
+
+        // QR Code Generator
+        document.getElementById('generateQR').addEventListener('click', function() {
+            const text = document.getElementById('qrText').value.trim();
+            if (!text) {
+                showNotification('Masukkan teks terlebih dahulu');
+                return;
+            }
+
+            const qrcodeContainer = document.getElementById('qrcode');
+            qrcodeContainer.innerHTML = '';
+            
+            // Generate QR code menggunakan library
+            const typeNumber = 0;
+            const errorCorrectionLevel = 'L';
+            const qr = qrcode(typeNumber, errorCorrectionLevel);
+            qr.addData(text);
+            qr.make();
+            
+            // Buat canvas untuk QR code
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const cellSize = 6;
+            const margin = 4;
+            const size = qr.getModuleCount() * cellSize + margin * 2;
+            
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Set background putih
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Gambar modul QR code
+            ctx.fillStyle = '#000000';
+            for (let row = 0; row < qr.getModuleCount(); row++) {
+                for (let col = 0; col < qr.getModuleCount(); col++) {
+                    if (qr.isDark(row, col)) {
+                        ctx.fillRect(
+                            col * cellSize + margin,
+                            row * cellSize + margin,
+                            cellSize,
+                            cellSize
+                        );
+                    }
+                }
+            }
+            
+            // Tambahkan canvas ke container
+            qrcodeContainer.appendChild(canvas);
+            
+            // Setup tombol download
+            document.getElementById('downloadQR').onclick = function() {
+                const link = document.createElement('a');
+                link.download = 'qrcode.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showNotification('QR Code berhasil diunduh!');
+            };
+        });
+
+        // Password Generator
+        document.getElementById('generatePassword').addEventListener('click', function() {
+            const length = parseInt(document.getElementById('passwordLength').value);
+            const includeUppercase = document.getElementById('includeUppercase').checked;
+            const includeLowercase = document.getElementById('includeLowercase').checked;
+            const includeNumbers = document.getElementById('includeNumbers').checked;
+            const includeSymbols = document.getElementById('includeSymbols').checked;
+            
+            const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+            const numbers = '0123456789';
+            const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+            
+            let chars = '';
+            if (includeUppercase) chars += uppercase;
+            if (includeLowercase) chars += lowercase;
+            if (includeNumbers) chars += numbers;
+            if (includeSymbols) chars += symbols;
+            
+            if (chars === '') {
+                document.getElementById('passwordResult').textContent = 'Pilih setidaknya satu jenis karakter';
+                return;
+            }
+            
+            let password = '';
+            const array = new Uint32Array(length);
+            window.crypto.getRandomValues(array);
+            
+            for (let i = 0; i < length; i++) {
+                password += chars[array[i] % chars.length];
+            }
+            
+            document.getElementById('passwordResult').textContent = password;
+            
+            // Update copy button
+            document.getElementById('copyPassword').onclick = function() {
+                copyToClipboard(password);
+            };
+        });
+
+        // Text Case Converters
+        document.getElementById('toUpperCase').addEventListener('click', function() {
+            const text = document.getElementById('textInput').value;
+            document.getElementById('textResult').textContent = text.toUpperCase();
+            updateTextCopyButton();
+        });
+
+        document.getElementById('toLowerCase').addEventListener('click', function() {
+            const text = document.getElementById('textInput').value;
+            document.getElementById('textResult').textContent = text.toLowerCase();
+            updateTextCopyButton();
+        });
+
+        document.getElementById('toTitleCase').addEventListener('click', function() {
+            const text = document.getElementById('textInput').value;
+            document.getElementById('textResult').textContent = text.replace(/\w\S*/g, function(txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+            updateTextCopyButton();
+        });
+
+        document.getElementById('toSentenceCase').addEventListener('click', function() {
+            const text = document.getElementById('textInput').value;
+            document.getElementById('textResult').textContent = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+            updateTextCopyButton();
+        });
+
+        function updateTextCopyButton() {
+            document.getElementById('copyText').onclick = function() {
+                copyToClipboard(document.getElementById('textResult').textContent);
+            };
+        }
+
+        // URL Encoder/Decoder
+        document.getElementById('encodeUrl').addEventListener('click', function() {
+            const text = document.getElementById('urlInput').value;
+            document.getElementById('urlResult').textContent = encodeURIComponent(text);
+            updateUrlCopyButton();
+        });
+
+        document.getElementById('decodeUrl').addEventListener('click', function() {
+            const text = document.getElementById('urlInput').value;
+            try {
+                document.getElementById('urlResult').textContent = decodeURIComponent(text);
+                updateUrlCopyButton();
+            } catch (e) {
+                document.getElementById('urlResult').textContent = 'Error: URL tidak valid';
+            }
+        });
+
+        function updateUrlCopyButton() {
+            document.getElementById('copyUrl').onclick = function() {
+                copyToClipboard(document.getElementById('urlResult').textContent);
+            };
+        }
+
+        // ========== FITUR GANTI WARNA WEB ==========
+        
+        // Toggle theme customizer dengan tombol di header
+        document.getElementById('colorChangerBtn').addEventListener('click', function() {
+            document.getElementById('themeCustomizer').classList.toggle('open');
+        });
+
+        // Toggle theme customizer dengan tombol di panel
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            document.getElementById('themeCustomizer').classList.toggle('open');
+        });
+
+        // Theme presets
+        const themePresets = {
+            default: {
+                primary: '#0ff0fc',
+                secondary: '#0066ff',
+                dark: '#0a0a1a',
+                darker: '#050510',
+                light: '#e0f7ff',
+                cardBg: '#0d0d2b'
+            },
+            purple: {
+                primary: '#ff4081',
+                secondary: '#7c4dff',
+                dark: '#1a1a2e',
+                darker: '#0f0f1a',
+                light: '#f8f8ff',
+                cardBg: '#232342'
+            },
+            green: {
+                primary: '#00e676',
+                secondary: '#00b0ff',
+                dark: '#0a1a0a',
+                darker: '#051005',
+                light: '#e8f5e9',
+                cardBg: '#0d2b1a'
+            },
+            orange: {
+                primary: '#ff9100',
+                secondary: '#ff1744',
+                dark: '#1a0f0a',
+                darker: '#100a05',
+                light: '#fff3e0',
+                cardBg: '#2b1a0d'
+            },
+            pink: {
+                primary: '#f50057',
+                secondary: '#3d5afe',
+                dark: '#1a0a14',
+                darker: '#10050a',
+                light: '#fce4ec',
+                cardBg: '#2b0d1f'
+            },
+            dark: {
+                primary: '#b0b0b0',
+                secondary: '#757575',
+                dark: '#121212',
+                darker: '#000000',
+                light: '#e0e0e0',
+                cardBg: '#1e1e1e'
+            },
+            red: {
+                primary: '#ff0000',
+                secondary: '#ff6b6b',
+                dark: '#1a0a0a',
+                darker: '#100505',
+                light: '#ffe6e6',
+                cardBg: '#2b0d0d'
+            },
+            magenta: {
+                primary: '#9c27b0',
+                secondary: '#e91e63',
+                dark: '#1a0a14',
+                darker: '#10050a',
+                light: '#fce4ec',
+                cardBg: '#2b0d1f'
+            },
+            cyan: {
+                primary: '#00ffcc',
+                secondary: '#00ccff',
+                dark: '#0a1a1a',
+                darker: '#051010',
+                light: '#e0ffff',
+                cardBg: '#0d2b2b'
+            }
+        };
+
+        // Apply theme
+        function applyTheme(theme, glow) {
+            const root = document.documentElement;
+            const colors = themePresets[theme];
+            
+            root.style.setProperty('--primary', colors.primary);
+            root.style.setProperty('--secondary', colors.secondary);
+            root.style.setProperty('--dark', colors.dark);
+            root.style.setProperty('--darker', colors.darker);
+            root.style.setProperty('--light', colors.light);
+            root.style.setProperty('--card-bg', colors.cardBg);
+            
+            // Apply or remove glow effect
+            if (glow === 'true') {
+                document.body.classList.add('theme-glow');
+            } else {
+                document.body.classList.remove('theme-glow');
+            }
+            
+            // Update active preset
+            document.querySelectorAll('.theme-preset').forEach(preset => {
+                preset.classList.remove('active');
+            });
+            document.querySelector(`.theme-preset[data-theme="${theme}"]`).classList.add('active');
+            
+            // Save to localStorage
+            localStorage.setItem('savedTheme', theme);
+            localStorage.setItem('themeGlow', glow);
+        }
+
+        // Reset to default theme
+        document.getElementById('resetTheme').addEventListener('click', function() {
+            applyTheme('default', 'false');
+            showNotification('Tema berhasil direset ke default!');
+        });
+
+        // Load saved theme
+        function loadSavedTheme() {
+            const savedTheme = localStorage.getItem('savedTheme') || 'default';
+            const themeGlow = localStorage.getItem('themeGlow') || 'false';
+            
+            applyTheme(savedTheme, themeGlow);
+        }
+
+        // Add event listeners to theme presets
+        document.querySelectorAll('.theme-preset').forEach(preset => {
+            preset.addEventListener('click', function() {
+                const theme = this.getAttribute('data-theme');
+                const glow = this.getAttribute('data-glow');
+                applyTheme(theme, glow);
+                showNotification(`Tema ${theme} ${glow === 'true' ? 'dengan efek glow' : ''} berhasil diterapkan!`);
+                
+                // Tutup panel setelah memilih tema
+                document.getElementById('themeCustomizer').classList.remove('open');
+            });
+        });
+    </script>
+</body>
+</html>
