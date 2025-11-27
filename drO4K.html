@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>VikkStecu Termux Dark 0.2</title>
+<style>
+body {
+    background: black;
+    color: #00ff00;
+    font-family: "Courier New", monospace;
+    margin: 0;
+    padding: 0;
+}
+#termux {
+    padding: 15px;
+    height: 90vh;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    font-size: 16px;
+}
+#inputBox {
+    width: 100%;
+    padding: 10px;
+    background: black;
+    color: #00ff00;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    font-family: "Courier New", monospace;
+}
+</style>
+</head>
+<body>
+
+<div id="termux"></div>
+<input id="inputBox" placeholder="Masukkan perintah..." autofocus>
+
+<script>
+let termux = document.getElementById("termux");
+let input = document.getElementById("inputBox");
+
+function print(text) {
+    termux.innerHTML += text + "\n";
+    termux.scrollTop = termux.scrollHeight;
+}
+
+// --------------------------------------------------
+// BOOTING EFFECT
+// --------------------------------------------------
+let bootText = [
+    "Booting VikkStecu Dark System...",
+    "Loading kernel...",
+    "Initializing modules...",
+    "Checking system...",
+    "Preparing terminal...",
+    "",
+    "░█░█░█ █▀█ █▄░█ █▄░█ ███ █▀▀ █░░█ █▀▀ █▀▀ █▀▀▄",
+    "█▄█▄█ █▀█ █░▀█ █░▀█  █  █▀▀ █░░█ █▀▀ █▀▀ █░░█",
+    "░▀░▀░ ▀░▀ ▀░░▀ ▀░░▀  ▀  ▀▀▀ ░▀▀░ ▀▀▀ ▀▀▀ ▀░░▀",
+    "",
+    "██╗░░░██╗██╗██╗░███╗░░░███╗██████╗░███████╗████████╗███████╗",
+    "██║░░░██║██║██║░████╗░████║██╔══██╗██╔════╝╚══██╔══╝██╔════╝",
+    "██║░░░██║██║██║░██╔████╔██║██████╔╝█████╗░░░░░██║░░░█████╗░░",
+    "██║░░░██║██║██║░██║╚██╔╝██║██╔══██╗██╔══╝░░░░░██║░░░██╔══╝░░",
+    "╚██████╔╝██║██║░██║░╚═╝░██║██║░░██║███████╗░░░██║░░░███████╗",
+    "░╚═════╝░╚═╝╚═╝░╚═╝░░░░░╚═╝╚═╝░░╚═╝╚══════╝░░░╚═╝░░░╚══════╝",
+    "",
+    "⚡ V I K K S T E C U — D A R K  S Y S T E M ⚡",
+    "",
+    "Welcome to Termux 0.1",
+    "Power by: VikkStecu",
+    ""
+];
+
+let bootIndex = 0;
+
+function booting() {
+    if (bootIndex < bootText.length) {
+        print(bootText[bootIndex]);
+        bootIndex++;
+        setTimeout(booting, 120);
+    }
+}
+booting();
+
+// --------------------------------------------------
+// COMMAND SYSTEM
+// --------------------------------------------------
+
+function execute(cmd) {
+
+    if (cmd === "pkg_log-in") {
+        print("Login sukses!");
+        print("Welcome to Termux 1.0");
+    }
+
+    else if (cmd === "pkg_menu") {
+        print("Termux 0.1");
+        print("- create_text");
+        print("- create_command");
+        print("- create_web");
+        print("- bot_hack");
+        print("- bot_nokos");
+        print("- system_info");
+    }
+
+    else if (cmd === "pkg_developer") {
+        print("Developer Mode Activated");
+        print("Author : VikkStecu");
+        print("Creating tools...");
+    }
+
+    else if (cmd === "bot_hack") {
+        print("[BOT HACK SYSTEM]");
+        print("Scanning target...");
+        print("Generating fake logs...");
+        print("Status : Completed (FAKE)");
+    }
+
+    else if (cmd === "bot_nokos") {
+        print("[BOT NOKOS SYSTEM]");
+        print("Searching virtual number...");
+        print("Status : READY (FAKE)");
+    }
+
+    else if (cmd === "create_text") {
+        print("Masukkan teks > Dibuat!");
+    }
+
+    else if (cmd === "system_info") {
+        print("Device : Universal");
+        print("UI Version : Dark 0.2");
+        print("Powered by : VikkStecu");
+    }
+
+    else if (cmd === "help") {
+        print("Available Commands:");
+        print("pkg_log-in, pkg_menu, pkg_developer,");
+        print("bot_hack, bot_nokos, create_text, system_info");
+    }
+
+    else {
+        print("Command not found: " + cmd);
+    }
+}
+
+// --------------------------------------------------
+
+input.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        let cmd = input.value;
+        print(">" + cmd);
+        execute(cmd);
+        input.value = "";
+    }
+});
+</script>
+
+</body>
+</html>
