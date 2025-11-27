@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Fake Termux Pro</title>
+<style>
+body {
+    background: #000;
+    color: #00ff00;
+    font-family: monospace;
+    padding: 10px;
+}
+#terminal { white-space: pre-wrap; font-size: 15px; }
+#cmd {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #00ff00;
+    font-size: 15px;
+    font-family: monospace;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="terminal"></div>
+<input id="cmd" autocomplete="off"/>
+
+<script>
+// PRINT
+function print(t){
+    terminal.innerHTML += "\n" + t;
+    window.scrollTo(0, document.body.scrollHeight);
+}
+
+// BOOTING
+function booting(){
+    print("[BOOT] Initializing system...");
+    setTimeout(()=>print("[BOOT] Loading modules..."),300);
+    setTimeout(()=>print("[BOOT] Loading UI..."),600);
+    setTimeout(()=>print("[BOOT] Checking environment..."),900);
+    setTimeout(()=>print("[BOOT] Starting engine..."),1200);
+    setTimeout(()=>{
+        print("--------------------------------------");
+        print("Welcome to Termux 0.1");
+        print("Powered by Vikkstecu");
+        print("--------------------------------------");
+        print("Masukkan command :");
+    },1500);
+}
+booting();
+
+// HANDLE COMMAND
+function handle(cmd){
+    cmd = cmd.toLowerCase();
+
+    if(cmd === "pkg_login"){
+        print("Welcome to Termux 1.0");
+    }
+
+    else if(cmd === "pkg_menu"){
+        print("Termux 0.1");
+        print("- Create text");
+        print("- Create command");
+        print("- Create web");
+    }
+
+    else if(cmd === "pkg_developer"){
+        print("Developer Tools:");
+        print("- Build System");
+        print("- Bot Engine");
+        print("- File Manager");
+    }
+
+    else if(cmd === "bot_hack"){
+        print("Starting Hack Bot...");
+        print("Scanning...");
+        print("Bypass Simulation...");
+        print("Hack Success (Fake)");
+    }
+
+    else if(cmd === "bot_nokos"){
+        print("NOKOS Engine Starting...");
+        print("Generating number...");
+        print("Success: +62xxxxxxx (Fake)");
+    }
+
+    else if(cmd === "help"){
+        print("Daftar Command:");
+        print("pkg_login");
+        print("pkg_menu");
+        print("pkg_developer");
+        print("bot_hack");
+        print("bot_nokos");
+        print("help");
+        print("clear");
+    }
+
+    else if(cmd === "clear"){
+        terminal.innerHTML = "";
+    }
+
+    else {
+        print("Command tidak dikenal.");
+    }
+}
+
+// INPUT SYSTEM
+cmd.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+        let input = cmd.value.trim();
+        print("> " + input);
+        handle(input);
+        cmd.value = "";
+    }
+});
+
+// UNIVERSAL KEYBOARD FIX
+function forceFocus(){
+    if(document.activeElement !== cmd){
+        cmd.focus({ preventScroll:false });
+    }
+}
+setInterval(forceFocus,120);
+
+document.body.addEventListener("click", ()=>cmd.focus());
+
+window.onload = ()=>setTimeout(forceFocus,100);
+</script>
+</body>
+</html>
