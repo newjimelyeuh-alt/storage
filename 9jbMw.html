@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Pencarian Personel - KEMNAKER RI</title>
+    <style>
+        /* Definisi Warna Biru Tua yang Diminta */
+        :root {
+            --final-blue: #15406B; /* Kode Warna Baru: 15406B */
+        }
+
+        /* CSS untuk tata letak dasar dan styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--final-blue); 
+        }
+        
+        /* Box utama untuk konten hasil pencarian */
+        .main-content-wrapper {
+            background-color: #f0f0f0; 
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        /* Header dan Navigasi */
+        .header {
+            background-color: var(--final-blue); 
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header img {
+            height: 40px; 
+            margin-right: 15px;
+        }
+
+        /* PERBAIKAN: Set display: flex secara default agar menu horizontal di landscape */
+        .navbar {
+            display: flex; 
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 0 15px;
+            font-size: 14px;
+        }
+        
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+        /* Styling untuk tombol hamburger (tersembunyi secara default/landscape) */
+        .menu-toggle {
+            display: none; 
+            font-size: 30px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: white;
+            padding: 0 10px;
+        }
+
+        /* --- STYLES BARU UNTUK DROPDOWN LAYANAN (DESKTOP) --- */
+        .nav-item-dropdown {
+            position: relative; 
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-item-dropdown .dropdown-toggle {
+            /* Menyesuaikan style link utama */
+            color: white;
+            text-decoration: none;
+            padding: 0 15px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        /* Submenu (Hidden by Default) */
+        .layanan-submenu {
+            display: none; 
+            position: absolute;
+            top: 100%; 
+            left: 0;
+            min-width: 300px;
+            background-color: white; 
+            border: 1px solid #ccc;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .layanan-submenu a {
+            color: #333;
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            /* Override parent .navbar a styles */
+            background-color: white !important; 
+        }
+
+        .layanan-submenu a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .layanan-submenu.open {
+            display: block; 
+        }
+        /* --- AKHIR DROPDOWN STYLES (DESKTOP) --- */
+
+        /* MEDIA QUERY BARU: Batas untuk tampilan mobile/potret diubah menjadi 600px */
+        @media (max-width: 600px) {
+            .header {
+                flex-wrap: wrap; 
+                justify-content: space-between;
+            }
+
+            /* Tampilkan ikon hamburger */
+            .menu-toggle {
+                display: block; 
+                order: 2; 
+            }
+
+            /* Sembunyikan menu navigasi secara default di mobile kecil */
+            .navbar {
+                display: none; 
+                width: 100%; 
+                flex-direction: column; 
+                text-align: center;
+                background-color: var(--final-blue); 
+            }
+            
+            .navbar a {
+                padding: 15px 0;
+                display: block;
+                border-top: 1px solid rgba(255, 255, 255, 0.1); 
+            }
+            
+            /* --- DROPDOWN MOBILE STYLES --- */
+            .nav-item-dropdown {
+                width: 100%;
+                display: block;
+                text-align: center;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                position: static; /* Hilangkan posisi absolut agar ikut aliran vertikal */
+            }
+
+            .nav-item-dropdown .dropdown-toggle {
+                padding: 15px 0; 
+                display: block;
+            }
+
+            .layanan-submenu {
+                position: static; 
+                border: none;
+                box-shadow: none;
+                min-width: auto;
+                background-color: #f8f8f8; /* Background untuk sub-menu */
+                padding: 0;
+            }
+
+            .layanan-submenu a {
+                color: #333; 
+                background-color: white;
+                text-align: left;
+                padding: 10px 20px;
+                border-bottom: 1px solid #ddd;
+                font-size: 14px;
+            }
+            /* --- AKHIR DROPDOWN MOBILE STYLES --- */
+
+            /* Menu terbuka saat kelas 'open' ditambahkan oleh JavaScript */
+            .navbar.open {
+                display: flex; 
+            }
+        }
+        
+        /* Konten Utama */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white; 
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--final-blue);
+            margin-bottom: 25px;
+        }
+        
+        /* Bagian Biodata Personel */
+        .biodata-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .box-title {
+            background-color: var(--final-blue); 
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        /* Tabel */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .data-row td {
+            font-weight: bold;
+        }
+
+        /* Tombol Kembali */
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .btn-kembali {
+            background-color: #007bff; 
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-kembali:hover {
+            background-color: #0056b3;
+        }
+        
+        /* Footer */
+        .footer-logo-section {
+            background-color: var(--final-blue); 
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 0;
+        }
+
+        .footer-logo-section img {
+            height: 60px;
+            margin: 0 auto;
+            display: block; 
+        }
+        
+        .footer-info {
+            background-color: var(--final-blue); 
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            border-top: 1px solid #fff;
+        }
+
+        .footer-info p {
+            margin: 5px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div style="display: flex; align-items: center;">
+            <img src="https://i.supaimg.com/e581cbe3-5fad-4ff5-a569-9225f4fa39a5.png" alt="Logo KEMENTERIAN KETENAGAKERJAAN REPUBLIK INDONESIA">
+        </div>
+        
+        <button class="menu-toggle" id="menuToggle">☰</button> 
+        
+        <nav class="navbar" id="mainNavbar">
+            <a href="https://temank3.kemnaker.go.id/">🏠 BERANDA</a>
+            <a href="https://temank3.kemnaker.go.id/">FLOW CHART</a>
+
+            <div class="nav-item-dropdown">
+                <a href="#" class="dropdown-toggle" id="layananToggle">
+                    <span class="layanan-text">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M3 3v8h8V3zm2 2h4v4H5zm6 8v8h8v-8zm2 2h4v4h-4zm-8 4v4h4v-4zm-2 2h4v4H5zm-4-8v-8h8v8zm2-6h4v4H5z"/></svg>LAYANAN ▼
+                    </span>
+                </a>
+                <div class="layanan-submenu" id="layananMenu">
+                    <a href="https://temank3.kemnaker.go.id/">Pengesahan Gambar Rencana (PGR)</a>
+                    <a href="https://temank3.kemnaker.go.id/">Penyelidikan Bahan (PB)</a>
+                    <a href="https://temank3.kemnaker.go.id/">Surat Keterangan K3</a>
+                    <a href="https://temank3.kemnaker.go.id/">Pembelajaran Elektronik P2HIV</a>
+                    <a href="https://temank3.kemnaker.go.id/">PENGHARGAAN AIDS</a>
+                </div>
+            </div>
+            <a href="https://temank3.kemnaker.go.id/">INFO & ARTIKEL</a>
+            <a href="https://files.clugx.my.id/Okx3r.html">DOKUMEN K3</a>
+            <a href="https://temank3.kemnaker.go.id/">📞 HUBUNGI KAMI</a>
+        </nav>
+    </header>
+    
+    <div class="main-content-wrapper">
+        <div class="container">
+            <h2>Hasil Pencarian Personel</h2>
+
+            <div class="biodata-box">
+                <div class="box-title">
+                    BIODATA PERSONEL
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Tempat & Tanggal Lahir</th>
+                            <th>Nama Instansi</th>
+                            <th>Jenis Personil</th>
+                            <th>Jenis Alat</th>
+                            <th>Klasifikasi</th>
+                            <th>Kelas</th>
+                            <th>No. Registrasi</th>
+                            <th>Masa Berlaku</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="data-row">
+                            <td>1</td>
+                            <td>ROBBY SAPUTRA</td>
+                            <td>Tabalong, 20-05-2006</td>
+                            <td>PT KARYA BERSAMA</td>
+                            <td>Operator</td>
+                            <td>FORKLIFT</td>
+                            <td>Operator Forklift</td>
+                            <td>Kelas 3</td>
+                            <td>481143942-OPK3-LT-BMC/X/2025</td>
+                            <td>16 OKTOBER 2030</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="button-container">
+                <button class="btn-kembali" onclick="window.close()">Kembali</button>
+            </div>
+
+        </div>
+    </div>
+    
+    <div class="footer-logo-section">
+        <img src="https://i.supaimg.com/aa518b00-8413-472a-a117-d9a6f00319ef.png" alt="Logo K3">
+    </div>
+
+    <footer class="footer-info">
+        <p>JL. Jenderal Gatot Subroto Kav. 51, Daerah Khusus Ibukota Jakarta 12750_Indonesia_</p>
+        <p>Copyright GG © 2020-2024 Ditjen Bimwasnaker & K3, Kemnaker R.I.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButton = document.getElementById('menuToggle');
+            const navbar = document.getElementById('mainNavbar');
+            const layananToggle = document.getElementById('layananToggle');
+            const layananMenu = document.getElementById('layananMenu');
+
+            // 1. Logika Toggle Menu Utama (Hamburger Icon)
+            toggleButton.addEventListener('click', function() {
+                navbar.classList.toggle('open');
+            });
+
+            // 2. Logika Toggle Submenu Layanan (Dropdown)
+            layananToggle.addEventListener('click', function(e) {
+                e.preventDefault(); // Mencegah navigasi ke '#'
+                layananMenu.classList.toggle('open');
+            });
+            
+            // 3. Menutup menu utama ketika salah satu tautan diklik (hanya pada mode mobile)
+            const navLinks = navbar.querySelectorAll('a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    // Hanya tutup jika menu sedang terbuka dan lebar layar kecil (600px)
+                    if (window.innerWidth <= 600 && navbar.classList.contains('open')) {
+                        // Tidak perlu menghapus kelas 'open' dari submenu, biarkan JS Dropdown mengurusnya
+                        // navbar.classList.remove('open'); // Opsional: dapat membuat UX buruk jika menavigasi
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
