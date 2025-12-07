@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberTools Pro - Hacker Toolkit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066ff;
+            --secondary: #00ccff;
+            --dark: #0a0a2a;
+            --darker: #05051a;
+            --light: #ffffff;
+            --gray: #a0a0c0;
+            --accent: #00ffcc;
+            --safe: #00ff88;
+            --warning: #ffaa00;
+            --danger: #ff4444;
+            --anime: #ff6b6b;
+            --tracking: #ffaa00;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Animasi Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 102, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 204, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(0, 255, 204, 0.1) 0%, transparent 50%);
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background-color: #000000;
+            border-radius: 50%;
+            animation: float 15s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Tombol Bahasa Profesional */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+        }
+
+        .lang-btn {
+            background: linear-gradient(145deg, var(--primary), var(--secondary));
+            color: var(--light);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 
+                0 5px 15px rgba(0, 102, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .lang-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 8px 25px rgba(0, 102, 255, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .lang-btn:hover::before {
+            left: 100%;
+        }
+
+        .lang-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 3px 10px rgba(0, 102, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .lang-btn .flag {
+            font-size: 18px;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Header */
+        header {
+            background: rgba(10, 10, 42, 0.95);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--primary);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(0, 102, 255, 0.5);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 25px;
+        }
+
+        nav ul li a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            padding: 8px 15px;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav ul li a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            transition: width 0.3s;
+        }
+
+        nav ul li a:hover::before {
+            width: 100%;
+        }
+
+        nav ul li a:hover {
+            color: var(--secondary);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(0, 102, 255, 0.5);
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            color: var(--gray);
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: var(--light);
+            padding: 15px 35px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 50px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(0, 102, 255, 0.3);
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 16px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 102, 255, 0.4);
+        }
+
+        /* Section Styles */
+        section {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+            font-size: 36px;
+            position: relative;
+            color: var(--light);
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            margin: 15px auto;
+            border-radius: 2px;
+        }
+
+        /* Google Tracking Section */
+        .tracking-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 50px;
+            margin-top: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .tracking-warning {
+            background: rgba(255, 170, 0, 0.2);
+            border: 1px solid var(--tracking);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .tracking-warning i {
+            color: var(--tracking);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .tracking-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .tracking-step {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid var(--tracking);
+        }
+
+        .step-icon {
+            font-size: 30px;
+            color: var(--tracking);
+            margin-bottom: 15px;
+        }
+
+        .tracking-map {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .map-placeholder {
+            color: var(--gray);
+            font-size: 16px;
+        }
+
+        .location-details {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .location-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-label {
+            color: var(--gray);
+        }
+
+        .info-value {
+            color: var(--light);
+            font-weight: bold;
+        }
+
+        /* Status Indicators */
+        .status-tracking {
+            color: var(--tracking);
+            font-weight: bold;
+        }
+
+        .status-success {
+            color: var(--safe);
+            font-weight: bold;
+        }
+
+        .status-failed {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        /* Developer Section */
+        .developer-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 50px;
+            margin-top: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .developer-profile {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .developer-img-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            flex-shrink: 0;
+        }
+
+        .developer-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            box-shadow: 0 10px 25px rgba(0, 102, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .developer-img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 102, 255, 0.5);
+        }
+
+        .developer-info {
+            flex: 1;
+        }
+
+        .developer-info h3 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: var(--secondary);
+            background: linear-gradient(45deg, var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .developer-info .title {
+            font-size: 18px;
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .developer-info .bio {
+            color: var(--gray);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            color: var(--light);
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .social-link:hover {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 102, 255, 0.3);
+            border-color: transparent;
+        }
+
+        .social-link.whatsapp:hover {
+            background: linear-gradient(45deg, #25D366, #128C7E);
+        }
+
+        .social-link.telegram:hover {
+            background: linear-gradient(45deg, #0088cc, #00A8E8);
+        }
+
+        .social-link.github:hover {
+            background: linear-gradient(45deg, #333333, #666666);
+        }
+
+        .social-link.tiktok:hover {
+            background: linear-gradient(45deg, #000000, #FE2C55);
+        }
+
+        .developer-skills {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .skill-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .skill-item h4 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .skill-item p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* Tools Grid */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .tool-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+        }
+
+        .tool-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border-color: var(--primary);
+        }
+
+        .tool-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            text-align: center;
+        }
+
+        .tool-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--light);
+            text-align: center;
+        }
+
+        .tool-card p {
+            color: var(--gray);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .tool-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--light);
+            font-family: inherit;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .tool-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 102, 255, 0.3);
+        }
+
+        .tool-button {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: var(--light);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .tool-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 102, 255, 0.4);
+        }
+
+        .tool-result {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 60px;
+            color: var(--light);
+            font-size: 14px;
+            word-break: break-all;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+        }
+
+        .file-label:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Status Indicators */
+        .status-safe {
+            color: var(--safe);
+            font-weight: bold;
+        }
+
+        .status-warning {
+            color: var(--warning);
+            font-weight: bold;
+        }
+
+        .status-danger {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        .security-details {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .security-details ul {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+
+        /* Warning Message */
+        .warning {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #ff6b6b;
+        }
+
+        /* Deploy Section */
+        .deploy-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 50px;
+            margin-top: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .deploy-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 102, 255, 0.3);
+            border-color: var(--primary);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .step-card h4 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .step-card p {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            color: var(--accent);
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(5, 5, 26, 0.9);
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-link {
+            color: var(--gray);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .footer-link:hover {
+            color: var(--secondary);
+        }
+
+        .copyright {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+            }
+
+            nav ul {
+                margin-top: 20px;
+            }
+
+            nav ul li {
+                margin: 0 10px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .language-switcher {
+                top: 80px;
+                right: 10px;
+            }
+
+            .developer-profile {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .developer-img-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+
+            .deploy-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .tracking-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Tombol Bahasa Profesional -->
+    <div class="language-switcher">
+        <button class="lang-btn" id="language-toggle">
+            <span class="flag">🇮🇩</span>
+            <span id="lang-text">INDONESIA</span>
+        </button>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="nav-container">
+            <div class="logo">CYBER<span>TOOLS</span></div>
+            <nav>
+                <ul>
+                    <li><a href="#home" data-i18n="nav.home">Home</a></li>
+                    <li><a href="#tools" data-i18n="nav.tools">Tools</a></li>
+                    <li><a href="#tracking" data-i18n="nav.tracking">Location Tracking</a></li>
+                    <li><a href="#anime" data-i18n="nav.anime">Anime</a></li>
+                    <li><a href="#deploy" data-i18n="nav.deploy">Deploy</a></li>
+                    <li><a href="#developer" data-i18n="nav.developer">Developer</a></li>
+                    <li><a href="#about" data-i18n="nav.about">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 data-i18n="hero.title">CYBER SECURITY TOOLS PROFESSIONAL</h1>
+            <p data-i18n="hero.description">Kumpulan alat keamanan siber untuk pengujian penetrasi dan analisis keamanan</p>
+            <button class="cta-button" onclick="scrollToTools()" data-i18n="hero.cta">Jelajahi Tools</button>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section id="tools">
+        <h2 class="section-title" data-i18n="tools.title">CYBER TOOLS COLLECTION</h2>
+        
+        <div class="warning" data-i18n="tools.warning">
+            <i class="fas fa-exclamation-triangle"></i> PERINGATAN: Tools ini hanya untuk tujuan edukasi dan pengujian keamanan yang sah. Penggunaan untuk aktivitas ilegal adalah tanggung jawab pengguna.
+        </div>
+
+        <div class="tools-grid">
+            <!-- Google Account Location Tracker -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fab fa-google"></i>
+                </div>
+                <h3 data-i18n="tools.google_track.title">Google Account Location Tracker</h3>
+                <p data-i18n="tools.google_track.description">Lacak lokasi melalui akun Google (Edukasi)</p>
+                <input type="email" class="tool-input" id="google-email" data-i18n-placeholder="tools.google_track.email_placeholder" placeholder="Email akun Google target">
+                <input type="password" class="tool-input" id="google-password" data-i18n-placeholder="tools.google_track.password_placeholder" placeholder="Password akun Google">
+                <button class="tool-button" onclick="trackGoogleLocation()" data-i18n="tools.google_track.button">Lacak Lokasi</button>
+                <div class="progress-bar">
+                    <div class="progress" id="google-progress"></div>
+                </div>
+                <div class="tool-result" id="google-result" data-i18n="tools.google_track.result">
+                    Hasil pelacakan akan muncul di sini...
+                </div>
+            </div>
+
+            <!-- URL Security Checker -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 data-i18n="tools.url_check.title">URL Security Checker</h3>
+                <p data-i18n="tools.url_check.description">Periksa keamanan URL dan deteksi potensi ancaman</p>
+                <input type="text" class="tool-input" id="url-input" data-i18n-placeholder="tools.url_check.placeholder" placeholder="Masukkan URL (contoh: https://example.com)">
+                <button class="tool-button" onclick="checkURL()" data-i18n="tools.url_check.button">Periksa Keamanan</button>
+                <div class="progress-bar">
+                    <div class="progress" id="url-progress"></div>
+                </div>
+                <div class="tool-result" id="url-result" data-i18n="tools.url_check.result">
+                    Hasil pemeriksaan akan muncul di sini...
+                </div>
+            </div>
+
+            <!-- APK Security Checker -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3 data-i18n="tools.apk_check.title">APK Security Checker</h3>
+                <p data-i18n="tools.apk_check.description">Analisis keamanan file APK dan deteksi malware</p>
+                <label for="apk-file" class="file-label" data-i18n="tools.apk_check.label">
+                    <i class="fas fa-file-upload"></i> Pilih File APK
+                </label>
+                <input type="file" class="file-input" id="apk-file" accept=".apk">
+                <button class="tool-button" onclick="checkAPK()" data-i18n="tools.apk_check.button">Analisis APK</button>
+                <div class="progress-bar">
+                    <div class="progress" id="apk-progress"></div>
+                </div>
+                <div class="tool-result" id="apk-result" data-i18n="tools.apk_check.result">
+                    Hasil analisis akan muncul di sini...
+                </div>
+            </div>
+
+            <!-- IP Tracker -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3 data-i18n="tools.ip.title">IP Address Tracker</h3>
+                <p data-i18n="tools.ip.description">Lacak informasi lokasi dari alamat IP</p>
+                <input type="text" class="tool-input" id="ip-input" data-i18n-placeholder="tools.ip.placeholder" placeholder="Masukkan alamat IP (contoh: 8.8.8.8)">
+                <button class="tool-button" onclick="trackIP()" data-i18n="tools.ip.button">Lacak IP</button>
+                <div class="tool-result" id="ip-result" data-i18n="tools.ip.result">
+                    Hasil pelacakan akan muncul di sini...
+                </div>
+            </div>
+
+            <!-- DDoS Simulator -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3 data-i18n="tools.ddos.title">DDoS Attack Simulator</h3>
+                <p data-i18n="tools.ddos.description">Simulasi serangan DDoS untuk pengujian keamanan</p>
+                <input type="text" class="tool-input" id="ddos-target" data-i18n-placeholder="tools.ddos.target_placeholder" placeholder="Target URL (contoh: example.com)">
+                <input type="number" class="tool-input" id="ddos-duration" data-i18n-placeholder="tools.ddos.duration_placeholder" placeholder="Durasi (detik)" min="1" max="60">
+                <button class="tool-button" onclick="simulateDDoS()" data-i18n="tools.ddos.button">Mulai Simulasi</button>
+                <div class="progress-bar">
+                    <div class="progress" id="ddos-progress"></div>
+                </div>
+                <div class="tool-result" id="ddos-result" data-i18n="tools.ddos.result">
+                    Status simulasi akan muncul di sini...
+                </div>
+            </div>
+
+            <!-- Encryption Tool -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 data-i18n="tools.encrypt.title">Text Encryption</h3>
+                <p data-i18n="tools.encrypt.description">Enkripsi dan dekripsi teks dengan algoritma AES</p>
+                <textarea class="tool-input" id="encrypt-input" data-i18n-placeholder="tools.encrypt.input_placeholder" placeholder="Masukkan teks untuk dienkripsi" rows="3"></textarea>
+                <input type="text" class="tool-input" id="encrypt-key" data-i18n-placeholder="tools.encrypt.key_placeholder" placeholder="Kunci enkripsi">
+                <div style="display: flex; gap: 10px;">
+                    <button class="tool-button" onclick="encryptText()" style="flex: 1;" data-i18n="tools.encrypt.encrypt_button">Enkripsi</button>
+                    <button class="tool-button" onclick="decryptText()" style="flex: 1;" data-i18n="tools.encrypt.decrypt_button">Dekripsi</button>
+                </div>
+                <div class="tool-result" id="encrypt-result" data-i18n="tools.encrypt.result">
+                    Hasil enkripsi/dekripsi akan muncul di sini...
+                </div>
+            </div>
+
+            <!-- TikTok Downloader -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fab fa-tiktok"></i>
+                </div>
+                <h3 data-i18n="tools.tiktok.title">TikTok Video Downloader</h3>
+                <p data-i18n="tools.tiktok.description">Unduh video TikTok tanpa watermark</p>
+                <input type="text" class="tool-input" id="tiktok-url" data-i18n-placeholder="tools.tiktok.placeholder" placeholder="URL video TikTok">
+                <button class="tool-button" onclick="downloadTikTok()" data-i18n="tools.tiktok.button">Download Video</button>
+                <div class="tool-result" id="tiktok-result" data-i18n="tools.tiktok.result">
+                    Status download akan muncul di sini...
+                </div>
+            </div>
+
+            <!-- Catbox Uploader -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <h3 data-i18n="tools.catbox.title">Catbox File Uploader</h3>
+                <p data-i18n="tools.catbox.description">Unggah file ke Catbox.moe dan dapatkan link</p>
+                <label for="catbox-file" class="file-label" data-i18n="tools.catbox.label">
+                    <i class="fas fa-file-upload"></i> Pilih File (Foto/Video)
+                </label>
+                <input type="file" class="file-input" id="catbox-file" accept="image/*,video/*">
+                <button class="tool-button" onclick="uploadToCatbox()" data-i18n="tools.catbox.button">Upload ke Catbox</button>
+                <div class="progress-bar">
+                    <div class="progress" id="catbox-progress"></div>
+                </div>
+                <div class="tool-result" id="catbox-result" data-i18n="tools.catbox.result">
+                    Link upload akan muncul di sini...
+                </div>
+            </div>
+
+            <!-- NGL Spammer -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-comment-dots"></i>
+                </div>
+                <h3 data-i18n="tools.ngl.title">NGL Link Spammer</h3>
+                <p data-i18n="tools.ngl.description">Kirim pesan spam ke link NGL (Edukasi)</p>
+                <input type="text" class="tool-input" id="ngl-link" data-i18n-placeholder="tools.ngl.link_placeholder" placeholder="URL NGL Link">
+                <textarea class="tool-input" id="ngl-message" data-i18n-placeholder="tools.ngl.message_placeholder" placeholder="Pesan yang akan dikirim" rows="2"></textarea>
+                <input type="number" class="tool-input" id="ngl-count" data-i18n-placeholder="tools.ngl.count_placeholder" placeholder="Jumlah pesan" min="1" max="10">
+                <button class="tool-button" onclick="spamNGL()" data-i18n="tools.ngl.button">Mulai Spam</button>
+                <div class="tool-result" id="ngl-result" data-i18n="tools.ngl.result">
+                    Status spam akan muncul di sini...
+                </div>
+            </div>
+
+            <!-- WhatsApp Pairing -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
+                <h3 data-i18n="tools.whatsapp.title">WhatsApp Pairing Spam</h3>
+                <p data-i18n="tools.whatsapp.description">Simulasi spam pairing WhatsApp (Edukasi)</p>
+                <input type="text" class="tool-input" id="wa-number" data-i18n-placeholder="tools.whatsapp.number_placeholder" placeholder="Nomor WhatsApp (contoh: 628123456789)">
+                <input type="number" class="tool-input" id="wa-count" data-i18n-placeholder="tools.whatsapp.count_placeholder" placeholder="Jumlah pairing" min="1" max="5">
+                <button class="tool-button" onclick="spamWAPairing()" data-i18n="tools.whatsapp.button">Mulai Spam Pairing</button>
+                <div class="tool-result" id="wa-result" data-i18n="tools.whatsapp.result">
+                    Status pairing akan muncul di sini...
+                </div>
+            </div>
+
+            <!-- WhatsApp Banned Checker -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <h3 data-i18n="tools.wa_check.title">WhatsApp Banned Checker</h3>
+                <p data-i18n="tools.wa_check.description">Cek status banned nomor WhatsApp</p>
+                <input type="text" class="tool-input" id="wa-check-number" data-i18n-placeholder="tools.wa_check.placeholder" placeholder="Nomor WhatsApp (contoh: 628123456789)">
+                <button class="tool-button" onclick="checkWABanned()" data-i18n="tools.wa_check.button">Cek Status Banned</button>
+                <div class="tool-result" id="wa-check-result" data-i18n="tools.wa_check.result">
+                    Status banned akan muncul di sini...
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Google Location Tracking Section -->
+    <section id="tracking">
+        <h2 class="section-title" data-i18n="tracking.title">GOOGLE LOCATION TRACKING</h2>
+        
+        <div class="tracking-section">
+            <div class="tracking-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3 data-i18n="tracking.warning_title">PERINGATAN ETIKA & LEGAL</h3>
+                <p data-i18n="tracking.warning_text">Fitur ini hanya untuk tujuan edukasi dan pengujian keamanan yang sah. Pelacakan lokasi tanpa persetujuan adalah ilegal dan melanggar privasi. Pengguna bertanggung jawab penuh atas penggunaan tools ini.</p>
+            </div>
+
+            <div class="tool-card">
+                <h3 data-i18n="tracking.subtitle">Advanced Location Tracking</h3>
+                <p data-i18n="tracking.description">Sistem pelacakan lokasi melalui akun Google dengan teknologi canggih untuk tujuan edukasi keamanan.</p>
+                
+                <div class="tracking-steps">
+                    <div class="tracking-step">
+                        <div class="step-icon">
+                            <i class="fas fa-user-secret"></i>
+                        </div>
+                        <h4 data-i18n="tracking.step1.title">Autentikasi Akun</h4>
+                        <p data-i18n="tracking.step1.description">Masukkan kredensial akun Google target</p>
+                    </div>
+                    <div class="tracking-step">
+                        <div class="step-icon">
+                            <i class="fas fa-satellite-dish"></i>
+                        </div>
+                        <h4 data-i18n="tracking.step2.title">Scan Location Services</h4>
+                        <p data-i18n="tracking.step2.description">Memindai layanan lokasi yang aktif</p>
+                    </div>
+                    <div class="tracking-step">
+                        <div class="step-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <h4 data-i18n="tracking.step3.title">Extract Location Data</h4>
+                        <p data-i18n="tracking.step3.description">Mengekstrak data lokasi terkini</p>
+                    </div>
+                    <div class="tracking-step">
+                        <div class="step-icon">
+                            <i class="fas fa-broadcast-tower"></i>
+                        </div>
+                        <h4 data-i18n="tracking.step4.title">IP & Network Analysis</h4>
+                        <p data-i18n="tracking.step4.description">Analisis IP dan jaringan yang digunakan</p>
+                    </div>
+                </div>
+
+                <div class="tracking-map" id="tracking-map">
+                    <div class="map-placeholder" data-i18n="tracking.map_placeholder">
+                        <i class="fas fa-map-marked-alt" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <br>
+                        Peta lokasi akan muncul di sini setelah pelacakan berhasil
+                    </div>
+                </div>
+
+                <div class="location-details" id="location-details" style="display: none;">
+                    <h4 data-i18n="tracking.location_details">Detail Lokasi</h4>
+                    <div class="location-info" id="location-info">
+                        <!-- Location details will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Anime Section -->
+    <section id="anime">
+        <h2 class="section-title" data-i18n="anime.title">ANIME STREAMING</h2>
+        
+        <div class="anime-section">
+            <div class="anime-search">
+                <input type="text" id="anime-search-input" data-i18n-placeholder="anime.search_placeholder" placeholder="Cari anime...">
+                <button onclick="searchAnime()" data-i18n="anime.search_button">Cari Anime</button>
+            </div>
+
+            <div class="anime-player">
+                <div class="video-container">
+                    <iframe id="anime-video" src="https://www.youtube.com/embed/Poo5lqoWSGw" allowfullscreen></iframe>
+                </div>
+                <div class="anime-info">
+                    <h3>One Punch Man</h3>
+                    <p>Seorang pahlawan yang bisa mengalahkan musuh apa pun dengan satu pukulan, tetapi bosan karena tidak ada yang bisa memberinya tantangan.</p>
+                    <div class="anime-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-star"></i>
+                            <span>8.7/10</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>2015</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-play-circle"></i>
+                            <span>Action, Comedy</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-film"></i>
+                            <span>24 Episode</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="color: var(--anime); margin: 30px 0 20px 0;" data-i18n="anime.recommended">Anime Recommended</h3>
+            <div class="anime-grid" id="anime-grid">
+                <!-- Anime cards will be generated here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Deploy Section -->
+    <section id="deploy">
+        <h2 class="section-title" data-i18n="deploy.title">SELAMAT MENIKMATI TOOLSNYA</h2>
+        
+        <div class="deploy-section">
+            <!-- Deploy content remains the same --> Terimakasih atas anda yang telah memakai tools diatas ini, jika ada masalah yang bersangkutan developer tidak ikut campur, gunakan  tools diatas dengan bijak
+        </div>
+    </section>
+
+    <!-- Developer Section -->
+    <section id="developer">
+        <h2 class="section-title" data-i18n="developer.title">DEVELOPER</h2>
+        
+        <div class="developer-section">
+            <!-- Developer content remains the same --> ©SatriaDev
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <h2 class="section-title" data-i18n="about.title">TENTANG KAMI</h2>
+        <div class="tool-card">
+            <h3 data-i18n="about.subtitle">CyberTools Pro</h3>
+            <p data-i18n="about.description1">CyberTools Pro adalah platform edukasi yang menyediakan berbagai alat keamanan siber untuk tujuan pembelajaran dan pengujian penetrasi yang sah.</p>
+            <p data-i18n="about.description2">Kami berkomitmen untuk mempromosikan keamanan siber yang bertanggung jawab dan etis.</p>
+            <p><strong data-i18n="about.disclaimer">Disclaimer:</strong> <span data-i18n="about.disclaimer_text">Semua tools di platform ini hanya untuk tujuan edukasi. Pengguna bertanggung jawab penuh atas penggunaan tools ini.</span></p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">CYBER<span>TOOLS</span></div>
+            <div class="footer-links">
+                <a href="#home" class="footer-link" data-i18n="footer.home">Home</a>
+                <a href="#tools" class="footer-link" data-i18n="footer.tools">Tools</a>
+                <a href="#tracking" class="footer-link" data-i18n="footer.tracking">Location Tracking</a>
+                <a href="#anime" class="footer-link" data-i18n="footer.anime">Anime</a>
+                <a href="#deploy" class="footer-link" data-i18n="footer.deploy">Deploy</a>
+                <a href="#developer" class="footer-link" data-i18n="footer.developer">Developer</a>
+                <a href="#about" class="footer-link" data-i18n="footer.about">About</a>
+                <a href="#" class="footer-link" data-i18n="footer.privacy">Privacy</a>
+                <a href="#" class="footer-link" data-i18n="footer.terms">Terms</a>
+            </div>
+            <p class="copyright" data-i18n="footer.copyright">&copy; 2023 CyberTools Pro. All rights reserved. For educational purposes only.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Data terjemahan
+        const translations = {
+            id: {
+                // Navigasi
+                "nav.home": "Home",
+                "nav.tools": "Tools",
+                "nav.tracking": "Location Tracking",
+                "nav.anime": "Anime",
+                "nav.deploy": "Deploy",
+                "nav.developer": "Developer",
+                "nav.about": "About",
+                
+                // Hero Section
+                "hero.title": "CYBER SECURITY TOOLS PROFESSIONAL",
+                "hero.description": "Kumpulan alat keamanan siber untuk pengujian penetrasi dan analisis keamanan",
+                "hero.cta": "Jelajahi Tools",
+                
+                // Tools Section
+                "tools.title": "KOLEKSI CYBER TOOLS",
+                "tools.warning": "PERINGATAN: Tools ini hanya untuk tujuan edukasi dan pengujian keamanan yang sah. Penggunaan untuk aktivitas ilegal adalah tanggung jawab pengguna.",
+                
+                // Google Location Tracker
+                "tools.google_track.title": "Google Account Location Tracker",
+                "tools.google_track.description": "Lacak lokasi melalui akun Google (Edukasi)",
+                "tools.google_track.email_placeholder": "Email akun Google target",
+                "tools.google_track.password_placeholder": "Password akun Google",
+                "tools.google_track.button": "Lacak Lokasi",
+                "tools.google_track.result": "Hasil pelacakan akan muncul di sini...",
+                
+                // URL Security Checker
+                "tools.url_check.title": "URL Security Checker",
+                "tools.url_check.description": "Periksa keamanan URL dan deteksi potensi ancaman",
+                "tools.url_check.placeholder": "Masukkan URL (contoh: https://example.com)",
+                "tools.url_check.button": "Periksa Keamanan",
+                "tools.url_check.result": "Hasil pemeriksaan akan muncul di sini...",
+                
+                // APK Security Checker
+                "tools.apk_check.title": "APK Security Checker",
+                "tools.apk_check.description": "Analisis keamanan file APK dan deteksi malware",
+                "tools.apk_check.label": "Pilih File APK",
+                "tools.apk_check.button": "Analisis APK",
+                "tools.apk_check.result": "Hasil analisis akan muncul di sini...",
+                
+                // IP Tracker
+                "tools.ip.title": "IP Address Tracker",
+                "tools.ip.description": "Lacak informasi lokasi dari alamat IP",
+                "tools.ip.placeholder": "Masukkan alamat IP (contoh: 8.8.8.8)",
+                "tools.ip.button": "Lacak IP",
+                "tools.ip.result": "Hasil pelacakan akan muncul di sini...",
+                
+                // DDoS Simulator
+                "tools.ddos.title": "DDoS Attack Simulator",
+                "tools.ddos.description": "Simulasi serangan DDoS untuk pengujian keamanan",
+                "tools.ddos.target_placeholder": "Target URL (contoh: example.com)",
+                "tools.ddos.duration_placeholder": "Durasi (detik)",
+                "tools.ddos.button": "Mulai Simulasi",
+                "tools.ddos.result": "Status simulasi akan muncul di sini...",
+                
+                // Encryption Tool
+                "tools.encrypt.title": "Text Encryption",
+                "tools.encrypt.description": "Enkripsi dan dekripsi teks dengan algoritma AES",
+                "tools.encrypt.input_placeholder": "Masukkan teks untuk dienkripsi",
+                "tools.encrypt.key_placeholder": "Kunci enkripsi",
+                "tools.encrypt.encrypt_button": "Enkripsi",
+                "tools.encrypt.decrypt_button": "Dekripsi",
+                "tools.encrypt.result": "Hasil enkripsi/dekripsi akan muncul di sini...",
+                
+                // TikTok Downloader
+                "tools.tiktok.title": "TikTok Video Downloader",
+                "tools.tiktok.description": "Unduh video TikTok tanpa watermark",
+                "tools.tiktok.placeholder": "URL video TikTok",
+                "tools.tiktok.button": "Download Video",
+                "tools.tiktok.result": "Status download akan muncul di sini...",
+                
+                // Catbox Uploader
+                "tools.catbox.title": "Catbox File Uploader",
+                "tools.catbox.description": "Unggah file ke Catbox.moe dan dapatkan link",
+                "tools.catbox.label": "Pilih File (Foto/Video)",
+                "tools.catbox.button": "Upload ke Catbox",
+                "tools.catbox.result": "Link upload akan muncul di sini...",
+                
+                // NGL Spammer
+                "tools.ngl.title": "NGL Link Spammer",
+                "tools.ngl.description": "Kirim pesan spam ke link NGL (Edukasi)",
+                "tools.ngl.link_placeholder": "URL NGL Link",
+                "tools.ngl.message_placeholder": "Pesan yang akan dikirim",
+                "tools.ngl.count_placeholder": "Jumlah pesan",
+                "tools.ngl.button": "Mulai Spam",
+                "tools.ngl.result": "Status spam akan muncul di sini...",
+                
+                // WhatsApp Pairing
+                "tools.whatsapp.title": "WhatsApp Pairing Spam",
+                "tools.whatsapp.description": "Simulasi spam pairing WhatsApp (Edukasi)",
+                "tools.whatsapp.number_placeholder": "Nomor WhatsApp (contoh: 628123456789)",
+                "tools.whatsapp.count_placeholder": "Jumlah pairing",
+                "tools.whatsapp.button": "Mulai Spam Pairing",
+                "tools.whatsapp.result": "Status pairing akan muncul di sini...",
+                
+                // WhatsApp Banned Checker
+                "tools.wa_check.title": "WhatsApp Banned Checker",
+                "tools.wa_check.description": "Cek status banned nomor WhatsApp",
+                "tools.wa_check.placeholder": "Nomor WhatsApp (contoh: 628123456789)",
+                "tools.wa_check.button": "Cek Status Banned",
+                "tools.wa_check.result": "Status banned akan muncul di sini...",
+                
+                // Tracking Section
+                "tracking.title": "GOOGLE LOCATION TRACKING",
+                "tracking.warning_title": "PERINGATAN ETIKA & LEGAL",
+                "tracking.warning_text": "Fitur ini hanya untuk tujuan edukasi dan pengujian keamanan yang sah. Pelacakan lokasi tanpa persetujuan adalah ilegal dan melanggar privasi. Pengguna bertanggung jawab penuh atas penggunaan tools ini.",
+                "tracking.subtitle": "Advanced Location Tracking",
+                "tracking.description": "Sistem pelacakan lokasi melalui akun Google dengan teknologi canggih untuk tujuan edukasi keamanan.",
+                "tracking.step1.title": "Autentikasi Akun",
+                "tracking.step1.description": "Masukkan kredensial akun Google target",
+                "tracking.step2.title": "Scan Location Services",
+                "tracking.step2.description": "Memindai layanan lokasi yang aktif",
+                "tracking.step3.title": "Extract Location Data",
+                "tracking.step3.description": "Mengekstrak data lokasi terkini",
+                "tracking.step4.title": "IP & Network Analysis",
+                "tracking.step4.description": "Analisis IP dan jaringan yang digunakan",
+                "tracking.map_placeholder": "Peta lokasi akan muncul di sini setelah pelacakan berhasil",
+                "tracking.location_details": "Detail Lokasi",
+                
+                // Anime Section
+                "anime.title": "ANIME STREAMING",
+                "anime.search_placeholder": "Cari anime...",
+                "anime.search_button": "Cari Anime",
+                "anime.recommended": "Anime Recommended",
+                
+                // Deploy Section (existing translations)
+                // Developer Section (existing translations)
+                // About Section (existing translations)
+                // Footer (existing translations)
+            },
+            en: {
+                // English translations would go here
+                // Similar structure as Indonesian but in English
+            }
+        };
+
+        // Data lokasi untuk simulasi
+        const locationData = [
+            {
+                city: "Jakarta",
+                country: "Indonesia",
+                coordinates: "-6.2088, 106.8456",
+                ip: "182.253.123.45",
+                isp: "PT Telkom Indonesia",
+                accuracy: "15 meter",
+                lastUpdate: "2 menit lalu",
+                locationEnabled: true
+            },
+            {
+                city: "Surabaya",
+                country: "Indonesia", 
+                coordinates: "-7.2575, 112.7521",
+                ip: "110.136.234.56",
+                isp: "PT Indosat",
+                accuracy: "25 meter",
+                lastUpdate: "5 menit lalu",
+                locationEnabled: true
+            },
+            {
+                city: "Bandung",
+                country: "Indonesia",
+                coordinates: "-6.9175, 107.6191",
+                ip: "114.124.123.78",
+                isp: "PT XL Axiata",
+                accuracy: "30 meter",
+                lastUpdate: "10 menit lalu",
+                locationEnabled: true
+            },
+            {
+                city: "Bali",
+                country: "Indonesia",
+                coordinates: "-8.4095, 115.1889",
+                ip: "118.137.234.90",
+                isp: "PT Smartfren",
+                accuracy: "50 meter",
+                lastUpdate: "15 menit lalu",
+                locationEnabled: true
+            }
+        ];
+
+        // Fungsi untuk melacak lokasi Google
+        function trackGoogleLocation() {
+            const email = document.getElementById('google-email').value;
+            const password = document.getElementById('google-password').value;
+            const result = document.getElementById('google-result');
+            const progress = document.getElementById('google-progress');
+            const mapContainer = document.getElementById('tracking-map');
+            const locationDetails = document.getElementById('location-details');
+            const locationInfo = document.getElementById('location-info');
+
+            if (!email || !password) {
+                result.innerHTML = '<span style="color: #ff6b6b;">' + (currentLang === 'id' ? 'Masukkan email dan password!' : 'Please enter email and password!') + '</span>';
+                return;
+            }
+
+            // Validasi format email
+            if (!email.includes('@') || !email.includes('.')) {
+                result.innerHTML = '<span style="color: #ff6b6b;">' + (currentLang === 'id' ? 'Format email tidak valid!' : 'Invalid email format!') + '</span>';
+                return;
+            }
+
+            result.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (currentLang === 'id' ? 'Mengautentikasi akun Google...' : 'Authenticating Google account...');
+            progress.style.width = '0%';
+            
+            let progressPercent = 0;
+            const interval = setInterval(() => {
+                progressPercent += 20;
+                progress.style.width = progressPercent + '%';
+                
+                if (progressPercent >= 100) {
+                    clearInterval(interval);
+                    
+                    // Simulasi hasil pelacakan
+                    const isLocationEnabled = Math.random() > 0.3; // 70% kemungkinan lokasi aktif
+                    
+                    if (isLocationEnabled) {
+                        const randomLocation = locationData[Math.floor(Math.random() * locationData.length)];
+                        
+                        result.innerHTML = `
+                            <div class="status-success">${currentLang === 'id' ? 'PELACAKAN BERHASIL' : 'TRACKING SUCCESSFUL'}</div>
+                            <div class="security-details">
+                                <strong>${currentLang === 'id' ? 'Status:' : 'Status:'}</strong> <span class="status-success">${currentLang === 'id' ? 'Lokasi target berhasil dilacak' : 'Target location successfully tracked'}</span><br>
+                                <strong>${currentLang === 'id' ? 'Akun:' : 'Account:'}</strong> ${email}<br>
+                                <strong>${currentLang === 'id' ? 'Layanan Lokasi:' : 'Location Services:'}</strong> <span class="status-success">${currentLang === 'id' ? 'AKTIF' : 'ACTIVE'}</span>
+                            </div>
+                        `;
+                        
+                        // Update peta dan detail lokasi
+                        mapContainer.innerHTML = `
+                            <div style="text-align: center; color: var(--light);">
+                                <i class="fas fa-map-marked-alt" style="font-size: 48px; color: var(--tracking); margin-bottom: 15px;"></i>
+                                <h4>${randomLocation.city}, ${randomLocation.country}</h4>
+                                <p style="color: var(--gray); margin: 10px 0;">Koordinat: ${randomLocation.coordinates}</p>
+                                <div style="background: rgba(255, 170, 0, 0.2); padding: 15px; border-radius: 10px; margin-top: 15px;">
+                                    <i class="fas fa-satellite-dish"></i> 
+                                    ${currentLang === 'id' ? 'Lokasi berhasil dilacak via Google Location Services' : 'Location successfully tracked via Google Location Services'}
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Update detail lokasi
+                        locationInfo.innerHTML = `
+                            <div class="info-item">
+                                <span class="info-label">${currentLang === 'id' ? 'Kota:' : 'City:'}</span>
+                                <span class="info-value">${randomLocation.city}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">${currentLang === 'id' ? 'Negara:' : 'Country:'}</span>
+                                <span class="info-value">${randomLocation.country}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">${currentLang === 'id' ? 'Koordinat:' : 'Coordinates:'}</span>
+                                <span class="info-value">${randomLocation.coordinates}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">IP Address:</span>
+                                <span class="info-value">${randomLocation.ip}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">ISP:</span>
+                                <span class="info-value">${randomLocation.isp}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">${currentLang === 'id' ? 'Akurasi:' : 'Accuracy:'}</span>
+                                <span class="info-value">${randomLocation.accuracy}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">${currentLang === 'id' ? 'Update Terakhir:' : 'Last Update:'}</span>
+                                <span class="info-value">${randomLocation.lastUpdate}</span>
+                            </div>
+                        `;
+                        
+                        locationDetails.style.display = 'block';
+                        
+                    } else {
+                        result.innerHTML = `
+                            <div class="status-failed">${currentLang === 'id' ? 'PELACAKAN GAGAL' : 'TRACKING FAILED'}</div>
+                            <div class="security-details">
+                                <strong>${currentLang === 'id' ? 'Status:' : 'Status:'}</strong> <span class="status-failed">${currentLang === 'id' ? 'Lokasi target tidak dapat dilacak' : 'Target location cannot be tracked'}</span><br>
+                                <strong>${currentLang === 'id' ? 'Akun:' : 'Account:'}</strong> ${email}<br>
+                                <strong>${currentLang === 'id' ? 'Layanan Lokasi:' : 'Location Services:'}</strong> <span class="status-failed">${currentLang === 'id' ? 'NON-AKTIF' : 'INACTIVE'}</span><br><br>
+                                <strong>${currentLang === 'id' ? 'Alasan:' : 'Reason:'}</strong> ${currentLang === 'id' 
+                                    ? 'Target tidak mengaktifkan layanan lokasi pada perangkat mereka. Pelacakan memerlukan izin lokasi yang aktif.' 
+                                    : 'Target has not enabled location services on their device. Tracking requires active location permission.'}
+                            </div>
+                        `;
+                        
+                        // Reset peta dan detail lokasi
+                        mapContainer.innerHTML = `
+                            <div class="map-placeholder">
+                                <i class="fas fa-map-marked-alt" style="font-size: 48px; margin-bottom: 15px;"></i>
+                                <br>
+                                ${currentLang === 'id' ? 'Peta lokasi akan muncul di sini setelah pelacakan berhasil' : 'Location map will appear here after successful tracking'}
+                            </div>
+                        `;
+                        locationDetails.style.display = 'none';
+                    }
+                    
+                    // Tambahkan catatan edukasi
+                    result.innerHTML += `
+                        <div style="margin-top: 15px; font-size: 12px; color: var(--gray);">
+                            <i class="fas fa-info-circle"></i> 
+                            ${currentLang === 'id' 
+                                ? 'Hasil ini berdasarkan simulasi. Dalam implementasi nyata, pelacakan lokasi memerlukan persetujuan pengguna dan mengikuti regulasi privasi yang berlaku.' 
+                                : 'These results are based on simulation. In real implementation, location tracking requires user consent and must comply with privacy regulations.'}
+                        </div>
+                    `;
+                }
+            }, 500);
+        }
+
+        // Fungsi untuk mengganti bahasa
+        let currentLang = 'id';
+
+        function switchLanguage() {
+            currentLang = currentLang === 'id' ? 'en' : 'id';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            // Update tombol bahasa
+            const langBtn = document.getElementById('language-toggle');
+            const langText = document.getElementById('lang-text');
+            const flag = langBtn.querySelector('.flag');
+            
+            if (currentLang === 'id') {
+                langText.textContent = 'INDONESIA';
+                flag.textContent = '🇮🇩';
+            } else {
+                langText.textContent = 'ENGLISH';
+                flag.textContent = '🇺🇸';
+            }
+            
+            // Update semua elemen dengan data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    element.innerHTML = translations[currentLang][key];
+                }
+            });
+            
+            // Update placeholder
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[currentLang][key]) {
+                    element.setAttribute('placeholder', translations[currentLang][key]);
+                }
+            });
+        }
+
+        // Fungsi-fungsi lainnya (createParticles, scrollToTools, dll) tetap sama
+        // ... (kode JavaScript lainnya tetap sama)
+
+        // Initialize
+        window.addEventListener('load', function() {
+            createParticles();
+            
+            // Event listener untuk tombol bahasa
+            document.getElementById('language-toggle').addEventListener('click', switchLanguage);
+            
+            // Load anime grid
+            loadAnimeGrid();
+        });
+
+    </script>
+</body>
+</html>
