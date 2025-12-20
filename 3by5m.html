@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text Generator</title>
+</head>
+<body>
+    <input type="text" id="input" placeholder="Masukkan text">
+    <input type="number" id="jumlah" placeholder="Masukkan jumlah">
+    <button onclick="generateText()">Generate</button>
+    <button onclick="copyText()" id="copy-btn" style="display: none;">Copy</button>
+    <div id="output"></div>
+
+    <script>
+        function generateText() {
+            var input = document.getElementById("input").value;
+            var jumlah = parseInt(document.getElementById("jumlah").value);
+            var output = document.getElementById("output");
+
+            if (input !== "" && !isNaN(jumlah) && jumlah > 0) {
+                var text = "";
+                for (var i = 1; i <= jumlah; i++) {
+                    text += i + ". " + input + "<br>";
+                }
+                output.innerHTML = text;
+                document.getElementById("copy-btn").style.display = "inline";
+            } else {
+                output.innerHTML = "Masukkan text dan jumlah yang valid";
+                document.getElementById("copy-btn").style.display = "none";
+            }
+        }
+
+        function copyText() {
+            var output = document.getElementById("output");
+            var range = document.createRange();
+            range.selectNode(output);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand("copy");
+            window.getSelection().removeAllRanges();
+            alert("Text berhasil disalin!");
+        }
+    </script>
+</body>
+</html>
